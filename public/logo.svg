@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Memento</title>
+  <desc id="desc">Ein elfenbeinfarbenes Erinnerungsbuch mit Lesezeichen auf ruhigen olivfarbenen Camouflage-Flächen.</desc>
+  <defs><clipPath id="tile"><rect width="512" height="512" rx="104"/></clipPath></defs>
+  <g clip-path="url(#tile)">
+    <path fill="#3d4939" d="M0 0h512v512H0z"/>
+    <path fill="#68725a" d="M-30 4C48-26 113 23 125 84s67 72 95 123-8 96-80 88S58 251-9 284Z"/>
+    <path fill="#82816a" d="M340-32c-41 65-12 122 44 145s60 81 143 60V-32Z"/>
+    <path fill="#555a43" d="M512 302c-65-33-128-18-145 38s-82 53-116 99 0 89 54 104h207Z"/>
+    <path fill="#333f33" d="M-23 418c61-49 121-48 155-10s54 91 31 124H-23Z"/>
+    <rect x="148" y="116" width="216" height="280" rx="24" fill="#f2eedf"/>
+    <path d="M188 132v248" fill="none" stroke="#52604b" stroke-width="9" stroke-linecap="round"/>
+    <path fill="#52604b" d="M250 116h42v95l-21-15-21 15Z"/>
+    <path d="M214 362h120" fill="none" stroke="#52604b" stroke-opacity=".55" stroke-width="7" stroke-linecap="round"/>
+  </g>
+</svg>
