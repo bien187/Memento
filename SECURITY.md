@@ -5,7 +5,7 @@
 Private Tabellen und der Storage-Bucket `diary-media` unterliegen RLS. Andere
 Benutzer lesen persönliche Tabellen nicht direkt. Community-RPCs geben eine
 beschränkte Projektion aus: keine Stimmung, keine körperliche Verfassung, keine
-Einheit und keine privaten Profilfelder. Ein Follow allein macht keinen privaten
+Einheit, keine Kaserne und keine privaten Profilfelder. Ein Follow allein macht keinen privaten
 Eintrag sichtbar. Beide Richtungen einer Blockierung werden geprüft.
 
 Requestgebundene Server-Clients validieren den Benutzer mit `auth.getUser()`.
@@ -26,7 +26,8 @@ Tagebuchlinks lesen ausschliesslich ausgewählte, nicht gelöschte `link`-Eintr�
 berechtigten Dienstperiode. Buchlinks lesen genau eine unveränderliche Version.
 Medienpfade werden aus tatsächlichen Eigentümerdatensätzen aufgelöst und müssen
 exakt `<owner>/<media-id>.<jpeg|png|webp>` entsprechen. Pfadmanipulation ist ausgeschlossen.
-Private Bewertungen sind auch in den öffentlichen Schnappschussantworten entfernt.
+Private Bewertungen sowie Kasernenangaben aus Profil und Dienstperioden sind auch
+in den öffentlichen Schnappschussantworten entfernt.
 Ein Widerruf sperrt weitere Anfragen; bereits heruntergeladene Kopien sind nicht rückrufbar.
 
 Zustandsändernde Server-Endpunkte prüfen den Origin. Öffentliche Leseanfragen,

@@ -3,6 +3,7 @@ const pkg = JSON.parse(await readFile("package.json", "utf8"));
 await mkdir("public/licenses", { recursive: true });
 const lines = [
   "Memento – Open-Source-Komponenten",
+  "Truppensymbole: Magnum045 / Wikimedia Commons, CC BY-SA 4.0. Eigene Nachweise: /insignia/NOTICE.txt und /insignia/manifest.json.",
   "",
   "Die aufgeführten Bibliotheken werden unter ihren jeweiligen Original-Lizenzen verwendet.",
   "HEIC-Konvertierung: heic-to, LGPL-3.0; unveränderte optionale Bibliothek.",

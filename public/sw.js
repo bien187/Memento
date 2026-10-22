@@ -1,10 +1,34 @@
-const CACHE = "memento-shell-v2";
+const CACHE = "memento-shell-v3";
 const SHELL = [
   "/",
   "/logo.svg",
   "/favicon.svg",
   "/icon-192.png",
   "/manifest.webmanifest",
+  "/insignia/infanterie.svg",
+  "/insignia/panzer.svg",
+  "/insignia/artillerie.svg",
+  "/insignia/luftwaffe.svg",
+  "/insignia/fliegerabwehr.svg",
+  "/insignia/genie.svg",
+  "/insignia/rettung.svg",
+  "/insignia/logistik.svg",
+  "/insignia/sanitaet.svg",
+  "/insignia/fuehrungsunterstuetzung.svg",
+  "/insignia/abc.svg",
+  "/insignia/militaerpolizei.svg",
+  "/insignia/spezialkraefte.svg",
+  "/insignia/nachrichtendienst.svg",
+  "/insignia/seelsorge.svg",
+  "/insignia/rotkreuzdienst.svg",
+  "/insignia/generalstab.svg",
+  "/insignia/justiz.svg",
+  "/insignia/territorial.svg",
+  "/insignia/ppd.svg",
+  "/insignia/bereitschaft.svg",
+  "/insignia/militaermusik.svg",
+  "/insignia/sport.svg",
+  "/insignia/armeefuehrung.svg",
 ];
 self.addEventListener("install", (event) => {
   event.waitUntil(

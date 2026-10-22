@@ -111,6 +111,17 @@
                   }
                 ]
               },
+              "barracks_id": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "maxLength": 60
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
               "unit": {
                 "type": "string",
                 "maxLength": 100
@@ -233,6 +244,17 @@
                 "type": [
                   "string",
                   "null"
+                ]
+              },
+              "barracks_id": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "maxLength": 60
+                  },
+                  {
+                    "type": "null"
+                  }
                 ]
               }
             },
@@ -987,6 +1009,17 @@
                         "type": [
                           "string",
                           "null"
+                        ]
+                      },
+                      "barracks_id": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "maxLength": 60
+                          },
+                          {
+                            "type": "null"
+                          }
                         ]
                       }
                     },

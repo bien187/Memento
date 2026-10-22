@@ -26,6 +26,8 @@ import { newPeriod, ProfileFields, PeriodFields } from "./auth";
 import { Books } from "./books";
 import { ShareDialog } from "./sharing";
 import { Photo } from "./media";
+import { BranchInsignia } from "./military-fields";
+import { barracksLabel } from "@/lib/domain/barracks";
 import {
   profileSchema,
   periodSchema,
@@ -261,10 +263,18 @@ export function ProfileView() {
               {catalogLabel(functions, profile.function_id)}
             </span>
           </div>
-          <p className="muted">
-            {catalogLabel(branches, profile.branch_id)}
-            {profile.unit ? ` / ${profile.unit}` : ""}
-          </p>
+          <div className="profile-branch">
+            <BranchInsignia id={profile.branch_id} />
+            <p className="muted">
+              {catalogLabel(branches, profile.branch_id)}
+              {profile.unit ? ` / ${profile.unit}` : ""}
+            </p>
+          </div>
+          {profile.barracks_id && (
+            <p className="muted private-barracks">
+              Kaserne: {barracksLabel(profile.barracks_id)} · privat
+            </p>
+          )}
         </div>
         <div className="profile-counts">
           <div>
@@ -318,6 +328,11 @@ export function ProfileView() {
                 <p>
                   {dateLabel(p.start_date)} — {dateLabel(p.end_date)}
                 </p>
+                {p.barracks_id && (
+                  <p className="period-barracks">
+                    {barracksLabel(p.barracks_id)}
+                  </p>
+                )}
               </button>
               {prefs?.active_period_id === p.id && (
                 <span className="mode-badge">Ausgewählt</span>

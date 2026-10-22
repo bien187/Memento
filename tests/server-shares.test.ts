@@ -112,12 +112,28 @@ describe("token-authorized public reading", () => {
     expect(snapshot.entries[0]).not.toHaveProperty("mood");
     expect(snapshot.entries[0]).not.toHaveProperty("condition");
     expect(snapshot.period).not.toHaveProperty("unit");
+    expect(snapshot.period).not.toHaveProperty("barracks_id");
     expect(snapshot.display_name).toBe("Gewählter Name");
     storage.tables.diary_shares[0].excluded_entry_ids = [shared.id];
     expect(
       (await publicContents(await authorizedShare(request, token), token))
         .snapshot.entries,
     ).toHaveLength(0);
+  });
+  it("omits private barracks from published book snapshots as well", async () => {
+    const share = storage.tables.diary_shares[0];
+    storage.tables.diary_shares = [];
+    storage.tables.book_shares = [{ ...share, version_id: f.version.id }];
+    storage.tables.book_versions = [
+      { id: f.version.id, owner_id: owner, snapshot: f.version.snapshot },
+    ];
+    const request = new NextRequest(`https://example.test/api/public/${token}`);
+    const { snapshot } = await publicContents(
+      await authorizedShare(request, token),
+      token,
+    );
+    expect(snapshot.period).not.toHaveProperty("barracks_id");
+    expect(snapshot.period).not.toHaveProperty("unit");
   });
   it("rejects revoked and expired links even with a previously valid cookie", async () => {
     const password = crypto.randomUUID(),

@@ -25,6 +25,7 @@ export const profileSchema = z.object({
   rank_id: z.string().max(40).nullable(),
   function_id: z.string().max(60).nullable(),
   branch_id: z.string().max(40).nullable(),
+  barracks_id: z.string().max(60).nullable().optional(),
   unit: z.string().max(100),
   discoverable: z.boolean(),
   private_profile: z.boolean(),
@@ -41,6 +42,7 @@ export const periodSchema = z
     rank_id: z.string().nullable(),
     function_id: z.string().nullable(),
     branch_id: z.string().nullable(),
+    barracks_id: z.string().max(60).nullable().optional(),
   })
   .refine((p) => p.end_date >= p.start_date, {
     message: "Das Ende muss nach dem Beginn liegen",

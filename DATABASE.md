@@ -5,20 +5,22 @@
 `supabase/migrations/202610220001_core.sql` erstellt Tabellen, Indizes, RLS,
 privaten Storage und Sync-/Community-RPCs. `202610220002_hardening.sql` ergänzt
 unveränderliche Versionen/Medien, Archivierung und weitere Integritätsprüfungen.
+`202610220003_military_catalog.sql` ergänzt 125 Funktionen in vier Teams,
+Standorte, Funktionszuordnungen, Abzeichenpfade und private Kasernenfelder.
 `supabase/seed.sql` enthält ausschliesslich durchsuchbare Katalogdaten.
 
-| Bereich | Tabellen | Zugriff |
-| --- | --- | --- |
-| Kataloge | military_ranks, military_functions, military_branches, military_units | Lesen auch anonym; keine Client-Schreibrechte |
-| Persönlich | profiles, service_periods, diary_entries, entry_media | Nur Eigentümer |
-| Einstellungen | user_preferences, reminder_preferences | Nur Eigentümer |
-| Buchentwurf | books, book_chapters, book_items | Nur Eigentümer |
-| Veröffentlichung | book_versions | Eigentümer liest; neue Version über RPC; Inhalte unveränderlich |
-| Freigaben | diary_shares, book_shares | Eigentümer; anonyme Inhalte nur über geprüfte Server-Endpunkte |
-| Beziehungen | follows, follow_requests | Nur beteiligte Konten; Schreiben über RPC |
-| Blockierung | blocks | Nur blockierender Eigentümer; Schreiben über RPC |
-| Synchronisation | sync_operations | Eigene Empfangsbelege; Schreiben ausschliesslich durch RPC |
-| Missbrauchsschutz | rate_limits | Keine Clientrechte; Server-RPC |
+| Bereich           | Tabellen                                                                                                             | Zugriff                                                         |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| Kataloge          | military_ranks, military_functions, military_branches, military_units, military_barracks, military_function_barracks | Lesen auch anonym; keine Client-Schreibrechte                   |
+| Persönlich        | profiles, service_periods, diary_entries, entry_media                                                                | Nur Eigentümer                                                  |
+| Einstellungen     | user_preferences, reminder_preferences                                                                               | Nur Eigentümer                                                  |
+| Buchentwurf       | books, book_chapters, book_items                                                                                     | Nur Eigentümer                                                  |
+| Veröffentlichung  | book_versions                                                                                                        | Eigentümer liest; neue Version über RPC; Inhalte unveränderlich |
+| Freigaben         | diary_shares, book_shares                                                                                            | Eigentümer; anonyme Inhalte nur über geprüfte Server-Endpunkte  |
+| Beziehungen       | follows, follow_requests                                                                                             | Nur beteiligte Konten; Schreiben über RPC                       |
+| Blockierung       | blocks                                                                                                               | Nur blockierender Eigentümer; Schreiben über RPC                |
+| Synchronisation   | sync_operations                                                                                                      | Eigene Empfangsbelege; Schreiben ausschliesslich durch RPC      |
+| Missbrauchsschutz | rate_limits                                                                                                          | Keine Clientrechte; Server-RPC                                  |
 
 Alle persönlichen Tabellen haben RLS. Zusätzlich sind direkte Tabellenmutationen
 für normale Clients weitgehend entzogen; `sync_entity` validiert Eigentümer und
@@ -36,8 +38,11 @@ Ein Volltextindex verwendet `german`; die lokale Suche durchsucht auch den Freit
 
 Grad, Funktion und Dienstzweig referenzieren getrennte Kataloge. Einheiten werden
 privat als freie Angabe geführt; `military_units` ist für einen später redaktionell
-gepflegten Einheitenkatalog vorbereitet. Der Funktionskatalog ist eine dokumentierte
-Startauswahl, keine vollständige Liste aller Rekrutierungsfunktionen.
+gepflegten Einheitenkatalog vorbereitet. Der Funktionskatalog enthält die 125 vom Auftrag vorgegebenen Bezeichnungen.
+`military_functions.team` gruppiert sie; das Team bestimmt keine Truppengattung.
+Kasernen werden als private `barracks_id` getrennt am Profil und der Dienstperiode
+gespeichert. Die Mehrfachzuordnung steht in `military_function_barracks`.
+Quellen und Grenzen: [Militärkatalog](docs/MILITARY_CATALOG.md).
 
 Buchkapitel und Buchabschnitte sind normalisiert. Der lokale Buchbaum wird im RPC
 atomar in diese Tabellen übertragen. `book_versions.snapshot` ist bewusst ein
@@ -57,8 +62,13 @@ Die verbindliche Laufzeitvalidierung befindet sich in `src/lib/backup.ts` und
   "exported_at": "2026-10-22T12:00:00.000Z",
   "owner_id": "UUID",
   "data": {
-    "profiles": [], "service_periods": [], "diary_entries": [],
-    "entry_media": [], "books": [], "book_versions": [], "user_preferences": []
+    "profiles": [],
+    "service_periods": [],
+    "diary_entries": [],
+    "entry_media": [],
+    "books": [],
+    "book_versions": [],
+    "user_preferences": []
   }
 }
 ```

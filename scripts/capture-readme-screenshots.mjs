@@ -66,6 +66,40 @@ try {
   await expect(desktop.locator(".recharts-surface").first()).toBeVisible();
   await screenshot(desktop, "desktop-statistics");
   await navigate(desktop, "Profil");
+  await desktop
+    .getByRole("button", { name: "Profil bearbeiten", exact: true })
+    .click();
+  await desktop
+    .getByLabel("Grundfunktion", { exact: true })
+    .fill("Richtstrahlpionier/-in");
+  await expect(
+    desktop.getByLabel("Kaserne / Standort (privat)", { exact: true }),
+  ).toHaveValue("kloten");
+  await desktop
+    .getByLabel("Kaserne / Standort (privat)", { exact: true })
+    .scrollIntoViewIfNeeded();
+  await screenshot(desktop, "desktop-function-barracks");
+  await desktop
+    .getByRole("button", { name: "Alle Abzeichen", exact: true })
+    .click();
+  await expect
+    .poll(() =>
+      desktop
+        .locator(".insignia-grid img")
+        .evaluateAll((images) =>
+          images.every((image) => image.complete && image.naturalWidth > 0),
+        ),
+    )
+    .toBe(true);
+  await screenshot(desktop, "desktop-insignia");
+  await desktop
+    .getByRole("button", { name: "Schliessen", exact: true })
+    .last()
+    .click();
+  await desktop
+    .getByRole("button", { name: "Schliessen", exact: true })
+    .last()
+    .click();
   await desktop.locator(".book-card > button").first().click();
   await expect(desktop.getByLabel("Buchtitel", { exact: true })).toBeVisible();
   await screenshot(desktop, "desktop-book-editor");

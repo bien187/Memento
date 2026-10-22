@@ -1,5 +1,5 @@
 import { PGlite } from "@electric-sql/pglite";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { beforeAll, afterAll, describe, it, expect } from "vitest";
 import { demoRecords } from "@/lib/local/demo";
 import type { Entity } from "@/lib/domain/models";
@@ -52,7 +52,9 @@ beforeAll(async () => {
     grant usage on schema public,auth,storage to anon,authenticated,service_role;
     grant all on storage.objects to anon,authenticated;
     alter default privileges in schema public grant all on tables to anon,authenticated,service_role;`);
-  for (const file of ["202610220001_core.sql", "202610220002_hardening.sql"]) {
+  for (const file of readdirSync("supabase/migrations")
+    .filter((file) => file.endsWith(".sql"))
+    .sort()) {
     const migration = readFileSync(
       `supabase/migrations/${file}`,
       "utf8",
@@ -99,6 +101,85 @@ describe("PostgreSQL authorization and sync transactions", () => {
         (await sql.query("select * from public.military_ranks")).rows.length,
       ).toBeGreaterThan(20),
     );
+  });
+  it("syncs private barracks, preserves older payloads and protects the new catalogs", async () => {
+    const owner = crypto.randomUUID();
+    const fixture = demoRecords(owner);
+    await sql.query("insert into auth.users values($1)", [owner]);
+    await as(owner, async () => {
+      const profile = {
+        ...fixture.profile,
+        username: null,
+        function_id: "artillerist",
+        barracks_id: "biere",
+        discoverable: true,
+      };
+      const first = await save("profiles", profile);
+      expect(first.record.barracks_id).toBe("biere");
+      const period = await save("service_periods", {
+        ...fixture.period,
+        function_id: "truppenkoch",
+        barracks_id: "thun",
+      });
+      expect(period.record.barracks_id).toBe("thun");
+      const { barracks_id: _, ...oldPayload } = profile;
+      expect((await save("profiles", oldPayload, 1)).record.barracks_id).toBe(
+        "biere",
+      );
+      expect(
+        (await save("profiles", { ...profile, barracks_id: null }, 2)).record
+          .barracks_id,
+      ).toBeNull();
+      await expect(
+        save("profiles", { ...profile, barracks_id: "made-up-location" }, 3),
+      ).rejects.toThrow(/foreign key/);
+    });
+    await as(bob, async () => {
+      expect(
+        (
+          await sql.query(
+            "select id from public.service_periods where owner_id=$1",
+            [owner],
+          )
+        ).rows,
+      ).toHaveLength(0);
+      const result = await sql.query<{ people: Record<string, unknown>[] }>(
+        "select public.community_people('Lukas') as people",
+      );
+      const person = result.rows[0].people.find(
+        (person) => person.id === owner,
+      );
+      expect(person).toBeDefined();
+      expect(person).not.toHaveProperty("barracks_id");
+      expect(person).not.toHaveProperty("unit");
+    });
+    await as(null, async () => {
+      expect(
+        (await sql.query("select id from public.military_functions")).rows,
+      ).toHaveLength(125);
+      expect(
+        (await sql.query("select id from public.military_barracks")).rows,
+      ).toHaveLength(29);
+      expect(
+        (await sql.query("select * from public.military_function_barracks"))
+          .rows.length,
+      ).toBeGreaterThan(50);
+      await expect(
+        sql.query(
+          "insert into public.military_barracks values('x','x','BE','x','x')",
+        ),
+      ).rejects.toThrow(/permission denied/);
+    });
+    // Catalog regeneration is idempotent and never overwrites personal selections.
+    await sql.exec(readFileSync("supabase/seed.sql", "utf8"));
+    expect(
+      (
+        await sql.query<{ barracks_id: string }>(
+          "select barracks_id from public.service_periods where id=$1",
+          [fixture.period.id],
+        )
+      ).rows[0].barracks_id,
+    ).toBe("thun");
   });
   it("prevents direct writes and client-supplied owner spoofing", async () => {
     await expect(

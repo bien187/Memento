@@ -2,6 +2,7 @@
 import { Brand } from "./brand";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   BookOpen,
   CalendarDays,
@@ -40,10 +41,22 @@ const nav = [
   },
   { path: "/profile", key: "profile", label: "Profil", icon: UserRound },
 ];
-export function App({ section }: { section: string }) {
+export function App({ section: initialSection }: { section: string }) {
+  const pathname = usePathname();
+  // The cached shell is shared by all five pages. Its server prop can still
+  // describe the diary after an offline reload at a different URL.
+  const section =
+    nav.find((item) => item.path === pathname)?.key ?? initialSection;
   const store = useStore(),
     { identity, data, ready, online, setPreferences, refresh } = store;
   const toast = useToast();
+  function navigateOffline(event: { preventDefault(): void }, path: string) {
+    if (!navigator.onLine) {
+      event.preventDefault();
+      window.history.pushState(null, "", path);
+      window.scrollTo(0, 0);
+    }
+  }
   const [editor, setEditor] = useState<{ entry?: Entry; date?: string } | null>(
     null,
   );
@@ -168,6 +181,8 @@ export function App({ section }: { section: string }) {
             <Link
               key={n.key}
               href={n.path}
+              onNavigate={(event) => navigateOffline(event, n.path)}
+              prefetch={online ? undefined : false}
               aria-current={section === n.key ? "page" : undefined}
               className={section === n.key ? "active" : ""}
             >
@@ -355,6 +370,8 @@ export function App({ section }: { section: string }) {
             <Link
               key={n.key}
               href={n.path}
+              onNavigate={(event) => navigateOffline(event, n.path)}
+              prefetch={online ? undefined : false}
               className={section === n.key ? "active" : ""}
               aria-current={section === n.key ? "page" : undefined}
             >

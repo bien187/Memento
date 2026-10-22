@@ -1,4 +1,4 @@
-// Source: https://www.armee.ch/de/militaerische-abzeichen ; no official insignia reproduced.
+// Source: https://www.armee.ch/de/militaerische-abzeichen ; SVG sources and licenses: public/insignia/manifest.json.
 export const ranks = [
   ["rekrut", "Rekrut"],
   ["soldat", "Soldat"],
@@ -30,7 +30,8 @@ export const branches = [
   ["infanterie", "Infanterie"],
   ["panzer", "Panzertruppen"],
   ["artillerie", "Artillerie"],
-  ["luftwaffe", "Luftwaffe"],
+  ["luftwaffe", "Luftwaffe / Fliegertruppen"],
+  ["fliegerabwehr", "Fliegerabwehrtruppen"],
   ["genie", "Genietruppen"],
   ["rettung", "Rettungstruppen"],
   ["logistik", "Logistiktruppen"],
@@ -47,28 +48,12 @@ export const branches = [
   ["territorial", "Territorialdienst"],
   ["sozialdienst", "Sozialdienst der Armee"],
   ["ppd", "Psychologisch-Pädagogischer Dienst"],
+  ["bereitschaft", "Bereitschaftsdienst"],
+  ["militaermusik", "Militärmusik"],
+  ["sport", "Sport"],
+  ["armeefuehrung", "Armeeführung"],
 ] as const;
-// Curated starter selection; not a complete list of the >120 recruiting functions.
-export const functions = [
-  ["infanterist", "Infanterist"],
-  ["aufklaerer", "Aufklärer"],
-  ["grenadier", "Grenadier"],
-  ["panzergrenadier", "Panzergrenadier"],
-  ["panzersoldat", "Panzersoldat"],
-  ["artillerist", "Artillerist"],
-  ["geniesoldat", "Geniesoldat"],
-  ["rettungssoldat", "Rettungssoldat"],
-  ["sanitaetssoldat", "Sanitätssoldat"],
-  ["spitalsoldat", "Spitalsoldat"],
-  ["motorfahrer", "Motorfahrer"],
-  ["verkehrssoldat", "Verkehrssoldat"],
-  ["truppenkoch", "Truppenkoch"],
-  ["logistiksoldat", "Logistiksoldat"],
-  ["uebermittlungssoldat", "Übermittlungssoldat"],
-  ["abc-abwehrsoldat", "ABC-Abwehrsoldat"],
-  ["militaerpolizeisoldat", "Militärpolizeisoldat"],
-  ["bueroordonnanz", "Büroordonnanz"],
-] as const;
+export { functions, functionGroups, functionTeam } from "./military-functions";
 export function catalogLabel(
   catalog: readonly (readonly [string, string])[],
   id: string | null,

@@ -17,6 +17,7 @@ export function demoRecords(owner: string) {
     rank_id: "soldat",
     function_id: "infanterist",
     branch_id: "infanterie",
+    barracks_id: "chur",
     unit: "Infanterie RS · fiktiv",
     discoverable: false,
     private_profile: true,
@@ -32,6 +33,7 @@ export function demoRecords(owner: string) {
     rank_id: "soldat",
     function_id: "infanterist",
     branch_id: "infanterie",
+    barracks_id: "chur",
   };
   const events = [
     [

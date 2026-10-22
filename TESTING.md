@@ -1,11 +1,11 @@
 # Tests und Abnahme
 
-## Ausgeführte Abnahme am 22.10.2026
+## Ausgeführte Abnahme am 23.10.2026
 
 - TypeScript strict und Next.js-Produktionsbuild: erfolgreich.
-- Vitest: **30 Tests in 6 Dateien erfolgreich**.
-- Playwright am frisch erstellten Produktionsbuild: **16 Tests erfolgreich**
-  (acht Abläufe jeweils auf Smartphone und Desktop, einschliesslich Offline-Neuladen).
+- Vitest: **38 Tests in 7 Dateien erfolgreich**.
+- Playwright am frisch erstellten Produktionsbuild: **20 Tests erfolgreich**
+  (zehn Abläufe jeweils auf Smartphone und Desktop, einschliesslich Offline-Neuladen).
 - Kleine Bildschirmbreite 320 px ohne horizontales Überlaufen geprüft.
 - Icon-Abmessungen, ICO-Einträge, deckendes Apple-/Maskable-Icon und visuelle
   Memento-Integration geprüft. Lockdatei per `npm ci --dry-run --offline` geprüft.
@@ -24,7 +24,8 @@ npm run test:e2e
 
 Vitest prüft lokale Kalender-/DST-Logik, Bewertungen, Bildgrenzen, Statistiken,
 dauerhafte Queue-Operationen, konkurrierende Änderungen, Backupvalidierung,
-Import/Zusammenführen/Wiederherstellung, PDF-Formate, Passwort-/Tokenlogik und
+Import/Zusammenführen/Wiederherstellung, PDF-Formate, Passwort-/Tokenlogik,
+125 Funktionen, Kasernenvorschläge, Abzeichenintegrität und
 öffentliche Inhaltsfilter. PGlite führt die tatsächlichen Migrationen und
 PL/pgSQL-RPCs in einer PostgreSQL-Engine aus, mit kleinen Stubs für die von
 Supabase bereitgestellten Auth-/Storage-Schemas. Die Anwendungstabellen, RLS,
@@ -51,7 +52,9 @@ Der gleiche Ablauf läuft mit 375 px und 1440 px, ergänzt durch eine 320-px-
 Überlaufprüfung. Testfälle: leeres neues Notizbuch, Onboarding, getrennte Skalen,
 Neuladen, Entwurfswiederherstellung, Offline-Schreiben, Suche, vier/fünf Fotos,
 Meilensteinbestätigung, drei Ansichten, Hauptnavigation, Buchsortierung/-versionen,
-PDF-Download, ZIP-Import und vollständiges Offline-Neuladen. Fehler speichern Trace
+PDF-Download, ZIP-Import, vollständiges Offline-Neuladen, Teamfilter, getrennte
+Kasernenangaben, Offline-Navigation mit Browser-Zurück und alle 24 Abzeichen im
+dunklen Modus bei 320 px. Fehler speichern Trace
 und Screenshot in `test-results`; HTML-Bericht: `playwright-report/index.html`.
 
 Eine reale iOS-/Android-Geräteprüfung mit virtueller Tastatur, HEIC-Originalen,

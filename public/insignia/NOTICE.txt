@@ -1,0 +1,32 @@
+Memento – Truppengattungs- und Dienstzweigabzeichen
+SVG depictions by Magnum045 / Wikimedia Commons, CC BY-SA 4.0.
+Original files preserved without modification; renamed by stable catalog ID.
+Source, original URL and SHA-256 of every file: manifest.json.
+License: https://creativecommons.org/licenses/by-sa/4.0/
+Reference: https://www.armee.ch/de/militaerische-abzeichen
+The artwork license applies to these assets, not to the application's source code.
+No endorsement by the Swiss Armed Forces or the artist is implied.
+infanterie.svg: Magnum045 — https://commons.wikimedia.org/wiki/File:Swiss_army_infantry.svg
+panzer.svg: Magnum045 — https://commons.wikimedia.org/wiki/File:Swiss_army_armour.svg
+artillerie.svg: Magnum045 — https://commons.wikimedia.org/wiki/File:Swiss_army_artillery.svg
+luftwaffe.svg: Magnum045 — https://commons.wikimedia.org/wiki/File:Swiss_army_aviation.svg
+fliegerabwehr.svg: Magnum045 — https://commons.wikimedia.org/wiki/File:Swiss_army_air_defence.svg
+genie.svg: Magnum045 — https://commons.wikimedia.org/wiki/File:Swiss_army_engineers.svg
+rettung.svg: Magnum045 — https://commons.wikimedia.org/wiki/File:Swiss_army_rescue_troops.svg
+logistik.svg: Magnum045 — https://commons.wikimedia.org/wiki/File:Swiss_army_logistics.svg
+sanitaet.svg: Magnum045 — https://commons.wikimedia.org/wiki/File:Swiss_army_medical_troops.svg
+fuehrungsunterstuetzung.svg: Magnum045 — https://commons.wikimedia.org/wiki/File:Swiss_army_signals.svg
+abc.svg: Magnum045 — https://commons.wikimedia.org/wiki/File:Swiss_army_cbrn_defence.svg
+militaerpolizei.svg: Magnum045 — https://commons.wikimedia.org/wiki/File:Swiss_army_military_police.svg
+spezialkraefte.svg: Magnum045 — https://commons.wikimedia.org/wiki/File:Swiss_army_special_forces.svg
+nachrichtendienst.svg: Magnum045 — https://commons.wikimedia.org/wiki/File:Swiss_army_military_intelligence.svg
+seelsorge.svg: Magnum045 — https://commons.wikimedia.org/wiki/File:Swiss_army_chaplains.svg
+rotkreuzdienst.svg: Magnum045 — https://commons.wikimedia.org/wiki/File:Swiss_army_red_cross_service.svg
+generalstab.svg: Magnum045 — https://commons.wikimedia.org/wiki/File:Swiss_army_general_staff.svg
+justiz.svg: Magnum045 — https://commons.wikimedia.org/wiki/File:Swiss_army_justice_service.svg
+territorial.svg: Magnum045 — https://commons.wikimedia.org/wiki/File:Swiss_army_territorial_service.svg
+ppd.svg: Magnum045 — https://commons.wikimedia.org/wiki/File:Swiss_army_psychological_and_pedagogical_service.svg
+bereitschaft.svg: Magnum045 — https://commons.wikimedia.org/wiki/File:Swiss_army_readiness_service.svg
+militaermusik.svg: Magnum045 — https://commons.wikimedia.org/wiki/File:Swiss_army_music.svg
+sport.svg: Magnum045 — https://commons.wikimedia.org/wiki/File:Swiss_army_sports.svg
+armeefuehrung.svg: Magnum045 — https://commons.wikimedia.org/wiki/File:Swiss_army_generals.svg

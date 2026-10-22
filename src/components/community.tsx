@@ -16,6 +16,7 @@ import { supabase } from "@/lib/supabase/browser";
 import { Button, Empty, useToast, useConfirm } from "./ui";
 import { FormattedText } from "./journal";
 import { catalogLabel, ranks, branches } from "@/lib/domain/catalogs";
+import { BranchInsignia } from "./military-fields";
 import { entryTitle } from "@/lib/domain/dates";
 import { message } from "@/lib/utils";
 type Person = {
@@ -267,12 +268,7 @@ export function Community() {
                       setTab("feed");
                     }}
                   >
-                    <span className="avatar">
-                      {p.name
-                        .split(" ")
-                        .map((w) => w[0])
-                        .join("")}
-                    </span>
+                    <BranchInsignia id={p.branch_id} />
                     <div>
                       <h3>{p.name}</h3>
                       <p>

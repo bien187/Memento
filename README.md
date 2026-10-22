@@ -39,6 +39,7 @@ Bildmotive in der Beispielansicht sind fiktiv.
 | Bereich                  | Funktionen                                                                                                                                                                  |
 | ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Tagebuch**             | Einträge erstellen und bearbeiten, bis zu vier Fotos, Meilensteine, Volltextsuche, Filter sowie Listen-, Karten- und Timeline-Ansicht.                                      |
+| **Militärprofil**        | 125 Funktionen in vier Teams, durchsuchbare Auswahl, 29 Kasernen mit änderbaren Vorschlägen und eine Galerie mit 24 lokal gespeicherten Truppensymbolen.                    |
 | **Dienstperioden**       | Mehrere RS-, WK- und weitere Perioden mit eigenen Datums- und Militärangaben; Monats- und Wochenkalender.                                                                   |
 | **Persönlicher Verlauf** | Freiwillige Angaben zu Stimmung und körperlicher Verfassung von 0 bis 100, Tages- und Wochenmittel, Zeitraumfilter. Diese Werte bleiben privat.                             |
 | **Offline**              | Lokale Speicherung mit IndexedDB, wiederherstellbare Entwürfe und PWA. Im Cloudmodus werden ausstehende Änderungen gespeichert und bei Verbindung synchronisiert.           |
@@ -47,6 +48,23 @@ Bildmotive in der Beispielansicht sind fiktiv.
 | **Community**            | Mit Supabase: Personen suchen, Follow-Anfragen bestätigen, einen Feed lesen und Personen blockieren.                                                                        |
 | **Freigaben**            | Mit Supabase: getrennte Tagebuch- und Buchlinks mit optionalem Passwort, Ablaufdatum und Widerruf.                                                                          |
 | **Darstellung**          | Heller, dunkler oder systemabhängiger Modus, dezente Akzentfarben und ein eigenes Memento-Logo mit PWA-Icons.                                                               |
+
+### Funktion, Kaserne und Truppengattung
+
+Die Funktionssuche lässt sich auf die vier Teams einschränken. Bei Wahl einer Funktion
+wird eine passende Kaserne vorgeschlagen; mehrere Standorte bleiben auswählbar.
+Profil und Dienstperioden speichern ihre Angaben getrennt und privat. Die Galerie
+zeigt die lokal eingebundenen Truppensymbole; der Sozialdienst hat ein gekennzeichnetes
+Ersatzsymbol. [Quellen und Zuordnungsregeln](docs/MILITARY_CATALOG.md).
+
+<details>
+  <summary>Funktionsauswahl und Abzeichengalerie ansehen</summary>
+
+![Funktionsauswahl mit automatisch vorgeschlagenem Standort Kloten](docs/screenshots/desktop-function-barracks.png)
+
+![Galerie der Truppengattungs- und Dienstzweigabzeichen](docs/screenshots/desktop-insignia.png)
+
+</details>
 
 ### Den eigenen Verlauf verstehen
 
@@ -167,8 +185,8 @@ npm run build
 npm run test:e2e
 ```
 
-Lokale Abnahme am **22.10.2026**: Typecheck und Produktionsbuild erfolgreich,
-**30 Vitest-Tests** sowie **16 Playwright-Tests** erfolgreich. Die Browserabläufe
+Lokale Abnahme am **23.10.2026**: Typecheck und Produktionsbuild erfolgreich,
+**38 Vitest-Tests** sowie **20 Playwright-Tests** erfolgreich. Die Browserabläufe
 prüfen unter anderem leere neue Notizbücher, Entwürfe, Offline-Neuladen, Bildgrenzen,
 Bücher, PDF und Backupimport auf Smartphone und Desktop.
 
@@ -193,8 +211,10 @@ node scripts/capture-readme-screenshots.mjs
 ```
 
 Das Skript öffnet Chrome mit einem frischen Browserprofil, wählt das fiktive Beispiel
-und speichert die sieben Aufnahmen in `docs/screenshots`. Ein anderer laufender Server
+und speichert die neun Aufnahmen in `docs/screenshots`. Ein anderer laufender Server
 kann über `MEMENTO_SCREENSHOT_URL` angegeben werden.
+
+Mehr zu Funktionen, Standortzuordnung und Bildquellen: [Militärkatalog](docs/MILITARY_CATALOG.md).
 
 ## Weitere Dokumentation
 
@@ -212,4 +232,5 @@ kann über `MEMENTO_SCREENSHOT_URL` angegeben werden.
 Memento ist ein unabhängiges Projekt ohne Verbindung zur Schweizer Armee oder
 Armeekompass. Die Beispielbilder sind selbst gezeichnete, fiktive Motive. Hinweise
 und Lizenztexte zu verwendeten Open-Source-Paketen liegen unter
-[`public/licenses`](public/licenses).
+[`public/licenses`](public/licenses). Die Truppensymbole besitzen eigene
+[Quellen- und Lizenznachweise](public/insignia/NOTICE.txt).

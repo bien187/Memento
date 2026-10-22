@@ -1,6 +1,6 @@
 "use client";
 import { Brand } from "./brand";
-import { useState, useId } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -21,7 +21,14 @@ import {
   type Profile,
   type Period,
 } from "@/lib/domain/models";
-import { ranks, branches, functions } from "@/lib/domain/catalogs";
+import {
+  CatalogField,
+  FunctionField,
+  BarracksField,
+  BranchField,
+} from "./military-fields";
+import { ranks } from "@/lib/domain/catalogs";
+import { suggestedBarracks } from "@/lib/domain/barracks";
 import { today, addDays } from "@/lib/domain/dates";
 import { message } from "@/lib/utils";
 const authSchema = z.object({
@@ -211,40 +218,6 @@ export function Auth() {
     </main>
   );
 }
-export function CatalogField({
-  label,
-  value,
-  onChange,
-  catalog,
-}: {
-  label: string;
-  value: string | null;
-  onChange: (v: string | null) => void;
-  catalog: readonly (readonly [string, string])[];
-}) {
-  const id = useId();
-  const [text, setText] = useState(
-    catalog.find((c) => c[0] === value)?.[1] ?? "",
-  );
-  return (
-    <Field label={label}>
-      <input
-        list={id}
-        value={text}
-        placeholder="Suchen oder noch offen lassen"
-        onChange={(e) => {
-          setText(e.target.value);
-          onChange(catalog.find((c) => c[1] === e.target.value)?.[0] ?? null);
-        }}
-      />
-      <datalist id={id}>
-        {catalog.map((c) => (
-          <option key={c[0]} value={c[1]} />
-        ))}
-      </datalist>
-    </Field>
-  );
-}
 export function ProfileFields({
   value,
   onChange,
@@ -282,15 +255,24 @@ export function ProfileFields({
         value={value.rank_id}
         onChange={(rank_id) => onChange({ ...value, rank_id })}
       />
-      <CatalogField
+      <FunctionField
         label="Grundfunktion"
-        catalog={functions}
         value={value.function_id}
-        onChange={(function_id) => onChange({ ...value, function_id })}
+        onChange={(function_id) =>
+          onChange({
+            ...value,
+            function_id,
+            barracks_id: suggestedBarracks(function_id, value.barracks_id),
+          })
+        }
       />
-      <CatalogField
+      <BarracksField
+        functionId={value.function_id}
+        value={value.barracks_id}
+        onChange={(barracks_id) => onChange({ ...value, barracks_id })}
+      />
+      <BranchField
         label="Truppengattung / Dienstzweig"
-        catalog={branches}
         value={value.branch_id}
         onChange={(branch_id) => onChange({ ...value, branch_id })}
       />
@@ -366,15 +348,24 @@ export function PeriodFields({
         value={value.rank_id}
         onChange={(rank_id) => onChange({ ...value, rank_id })}
       />
-      <CatalogField
+      <FunctionField
         label="Funktion in dieser Periode"
-        catalog={functions}
         value={value.function_id}
-        onChange={(function_id) => onChange({ ...value, function_id })}
+        onChange={(function_id) =>
+          onChange({
+            ...value,
+            function_id,
+            barracks_id: suggestedBarracks(function_id, value.barracks_id),
+          })
+        }
       />
-      <CatalogField
+      <BarracksField
+        functionId={value.function_id}
+        value={value.barracks_id}
+        onChange={(barracks_id) => onChange({ ...value, barracks_id })}
+      />
+      <BranchField
         label="Truppengattung in dieser Periode"
-        catalog={branches}
         value={value.branch_id}
         onChange={(branch_id) => onChange({ ...value, branch_id })}
       />
@@ -392,6 +383,7 @@ export function newPeriod(owner: string, profile?: Profile): Period {
     rank_id: profile?.rank_id ?? null,
     function_id: profile?.function_id ?? null,
     branch_id: profile?.branch_id ?? null,
+    barracks_id: profile?.barracks_id ?? null,
   };
 }
 export function Onboarding() {
@@ -407,6 +399,7 @@ export function Onboarding() {
     rank_id: null,
     function_id: null,
     branch_id: null,
+    barracks_id: null,
     unit: "",
     discoverable: false,
     private_profile: true,
@@ -463,6 +456,7 @@ export function Onboarding() {
                 rank_id: profile.rank_id,
                 function_id: profile.function_id,
                 branch_id: profile.branch_id,
+                barracks_id: profile.barracks_id ?? null,
                 unit: profile.unit,
               }));
             }

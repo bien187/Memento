@@ -61,6 +61,8 @@ describe("versioned private backups", () => {
     expect(first.profiles[0].rank_id).toBe("soldat");
     expect(first.profiles[0].function_id).toBe("infanterist");
     expect(first.service_periods[0].branch_id).toBe("infanterie");
+    expect(first.profiles[0].barracks_id).toBe("chur");
+    expect(first.service_periods[0].barracks_id).toBe("chur");
     expect(first.diary_entries).toHaveLength(35);
     expect(first.diary_entries.every((e) => e.visibility === "private")).toBe(
       true,

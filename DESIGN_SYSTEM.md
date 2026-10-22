@@ -27,8 +27,10 @@ Radix-Dialoge mit Fokusführung und echte Bestätigungsdialoge werden berücksic
 Drag-and-drop ist durch Verschiebeschaltflächen und Tastaturbedienung ergänzt.
 Die Skalen verwenden Zahlen und Text, keine Emojis oder medizinischen Deutungen.
 
-Ohne Foto erscheint eine typografische Datumskarte. Neutrale Symbole sind als
-Ersatz gekennzeichnet und stellen keine offiziellen militärischen Abzeichen dar.
+Ohne Foto erscheint eine typografische Datumskarte. Truppensymbole verwenden die gemeinsame Komponente `BranchInsignia` und 24
+lokal gespeicherte, lizenzierte SVG-Darstellungen mit einheitlicher Grösse und
+unveränderten Proportionen/Farben. Fehlende Bilder (Sozialdienst) und neutrale
+Grad-Ersatzsymbole sind als solche gekennzeichnet.
 Die offiziellen Katalogreferenzen sind bei den Datenbankzeilen und in
 `src/lib/domain/catalogs.ts` hinterlegt.
 

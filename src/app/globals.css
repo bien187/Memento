@@ -3451,3 +3451,143 @@ input.subtitle-input {
     gap: 5px;
   }
 }
+
+/* Shared branch assets retain their original proportions and colors in every theme. */
+.branch-insignia {
+  display: inline-block;
+  width: 36px;
+  height: 50px;
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+.branch-insignia-placeholder {
+  width: 36px;
+  height: 50px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  flex: 0 0 auto;
+}
+.function-picker {
+  display: grid;
+  gap: 14px;
+}
+.barracks-picker {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+}
+.barracks-school {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+  margin: 0;
+}
+.barracks-school svg {
+  flex: 0 0 auto;
+  margin-top: 2px;
+}
+.catalog-source {
+  color: var(--muted);
+  font-size: 11px;
+  text-underline-offset: 3px;
+}
+.branch-picker {
+  display: grid;
+  gap: 10px;
+}
+.branch-preview {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.branch-preview > span:nth-child(2) {
+  flex: 1;
+  min-width: 0;
+  font-size: 12px;
+}
+.branch-preview small {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 10px;
+}
+.branch-preview .button {
+  flex: 0 0 auto;
+}
+.insignia-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
+  gap: 12px;
+}
+.insignia-grid > button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  padding: 18px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.4;
+}
+.insignia-grid > button[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.insignia-grid .branch-insignia,
+.insignia-grid .branch-insignia-placeholder {
+  width: 43px;
+  height: 60px;
+}
+.insignia-grid small {
+  color: var(--muted);
+  font-size: 10px;
+}
+.insignia-credit {
+  margin-top: 20px;
+  font-size: 11px;
+}
+.profile-branch {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 10px;
+}
+.profile-branch .branch-insignia,
+.profile-branch .branch-insignia-placeholder {
+  width: 25px;
+  height: 35px;
+}
+.profile-branch p {
+  margin: 0;
+}
+.private-barracks {
+  margin-top: 8px;
+}
+.period-barracks {
+  color: var(--muted);
+  font-size: 11px;
+  margin-top: 5px;
+}
+@media (max-width: 400px) {
+  .branch-preview {
+    flex-wrap: wrap;
+  }
+  .branch-preview > span:nth-child(2) {
+    flex-basis: calc(100% - 48px);
+  }
+}
+.insignia-grid > button > span,
+.branch-preview > span:nth-child(2) {
+  overflow-wrap: anywhere;
+}

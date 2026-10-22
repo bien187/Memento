@@ -308,3 +308,168 @@ test("cached notebook reopens after a full offline reload", async ({
   ).toBeVisible();
   await context.setOffline(false);
 });
+
+test("function teams suggest editable private barracks independently for each period", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Lokales Tagebuch öffnen" }).click();
+  await page.getByLabel("Vollständiger Name").fill("Alex Muster");
+  const field = page.getByLabel("Grundfunktion", { exact: true });
+  const count = () =>
+    field.evaluate((input: HTMLInputElement) => input.list!.options.length);
+  await expect.poll(count).toBe(125);
+  for (const [team, size] of [
+    ["kampf", 21],
+    ["hilfe", 18],
+    ["unterstuetzung", 41],
+    ["technik", 45],
+  ] as const) {
+    await page.getByLabel("Funktionsteam", { exact: true }).selectOption(team);
+    await expect.poll(count).toBe(size);
+  }
+  await field.fill("Cybersoldat/-in");
+  await expect(
+    page.getByLabel("Kaserne / Standort (privat)", { exact: true }),
+  ).toHaveValue("jassbach");
+  await field.fill("Richtstrahlpionier/-in");
+  await expect(
+    page.getByLabel("Kaserne / Standort (privat)", { exact: true }),
+  ).toHaveValue("kloten");
+  await page.getByLabel("Funktionsteam", { exact: true }).selectOption("");
+  await field.fill("Zivilschutzpionier/-in");
+  await expect(
+    page.getByLabel("Kaserne / Standort (privat)", { exact: true }),
+  ).toHaveValue("");
+  await expect(
+    page.getByText(/Keine automatische Zuordnung hinterlegt/),
+  ).toBeVisible();
+  await field.fill("Infanterist/-in");
+  await expect(
+    page.getByLabel("Kaserne / Standort (privat)", { exact: true }),
+  ).toHaveValue("chur");
+  await page
+    .getByLabel("Kaserne / Standort (privat)", { exact: true })
+    .selectOption("colombier");
+  await page
+    .getByLabel("Truppengattung / Dienstzweig", { exact: true })
+    .fill("unvollständige Suche");
+  await page
+    .getByRole("button", { name: "Alle Abzeichen", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", {
+      name: "Truppengattungen & Dienstzweige",
+      exact: true,
+    }),
+  ).toBeVisible();
+  await page
+    .locator(".insignia-grid")
+    .getByRole("button", { name: "Artillerie", exact: true })
+    .click();
+  await expect(field).toHaveValue("Infanterist/-in");
+  await expect(
+    page.getByLabel("Truppengattung / Dienstzweig", { exact: true }),
+  ).toHaveValue("Artillerie");
+  // Choosing an insignia must not submit onboarding or infer the person's function.
+  await expect(page.getByLabel("Vollständiger Name")).toBeVisible();
+  await page.getByRole("button", { name: "Weiter", exact: true }).click();
+  await expect(
+    page.getByLabel("Kaserne / Standort (privat)", { exact: true }),
+  ).toHaveValue("colombier");
+  await page
+    .getByLabel("Funktion in dieser Periode", { exact: true })
+    .fill("Truppenkoch / Truppenköchin");
+  await expect(
+    page.getByLabel("Kaserne / Standort (privat)", { exact: true }),
+  ).toHaveValue("thun");
+  await page.getByRole("button", { name: "Weiter", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Tagebuch öffnen", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Meine Erinnerungen." }),
+  ).toBeVisible();
+  await nav(page).getByRole("link", { name: "Profil", exact: true }).click();
+  await expect(page.locator(".private-barracks")).toContainText(
+    "Colombier (NE)",
+  );
+  await expect(page.locator(".period-barracks")).toContainText("Thun (BE)");
+  await page.reload();
+  await expect(page.locator(".private-barracks")).toContainText(
+    "Colombier (NE)",
+  );
+  await expect(page.locator(".period-barracks")).toContainText("Thun (BE)");
+  await page
+    .getByRole("button", { name: "Profil bearbeiten", exact: true })
+    .click();
+  await expect(page.getByLabel("Grundfunktion", { exact: true })).toHaveValue(
+    "Infanterist/-in",
+  );
+  await expect(
+    page.getByLabel("Kaserne / Standort (privat)", { exact: true }),
+  ).toHaveValue("colombier");
+});
+
+test("all branch insignia remain available offline and fit small screens in dark mode", async ({
+  page,
+  context,
+}) => {
+  if (page.viewportSize()!.width < 760)
+    await page.setViewportSize({ width: 320, height: 700 });
+  await demo(page);
+  await page.evaluate(async () => {
+    await navigator.serviceWorker.ready;
+  });
+  await context.setOffline(true);
+  await page.reload();
+  await expect(
+    page.getByRole("heading", { name: "Meine Erinnerungen." }),
+  ).toBeVisible();
+  await nav(page).getByRole("link", { name: "Kalender", exact: true }).click();
+  await expect(page.locator(".calendar-panel")).toBeVisible();
+  await nav(page).getByRole("link", { name: "Statistik", exact: true }).click();
+  await expect(page.locator(".stats-overview")).toBeVisible();
+  await page.goBack();
+  await expect(page.locator(".calendar-panel")).toBeVisible();
+  await nav(page).getByRole("link", { name: "Profil", exact: true }).click();
+  await page.reload();
+  await expect(
+    page.getByRole("heading", { name: "Das bin ich." }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Dunkel", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Profil bearbeiten", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Alle Abzeichen", exact: true })
+    .click();
+  await expect(page.locator(".insignia-grid img")).toHaveCount(24);
+  await expect
+    .poll(() =>
+      page
+        .locator(".insignia-grid img")
+        .evaluateAll((images: HTMLImageElement[]) =>
+          images.every((image) => image.complete && image.naturalWidth > 0),
+        ),
+    )
+    .toBe(true);
+  await expect(
+    page.locator(".insignia-grid .branch-insignia-placeholder"),
+  ).toHaveCount(1);
+  await expect(page.getByRole("dialog").last()).toHaveCSS("opacity", "1");
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+  expect(
+    await page
+      .locator(".insignia-grid")
+      .evaluate((element) => element.scrollWidth <= element.clientWidth),
+  ).toBe(true);
+  await page.screenshot({
+    path: `test-results/insignia-${test.info().project.name}.png`,
+    animations: "disabled",
+  });
+});
