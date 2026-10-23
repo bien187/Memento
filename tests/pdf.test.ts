@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { generatePDF, type Paper } from "@/lib/pdf";
-import { demoRecords } from "@/lib/local/demo";
+import { demoRecords } from "./fixtures/notebook";
 describe("printable private exports", () => {
   const fixture = demoRecords(crypto.randomUUID());
   for (const paper of ["a4", "a5", "square"] as Paper[])

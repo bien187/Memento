@@ -59,7 +59,7 @@ export const db = new FeldbuchDB();
 export async function saveEntity<T extends Entity>(
   table: EntityTable,
   value: T,
-  mode: "cloud" | "local" | "demo",
+  mode: "cloud" | "local",
   database = db,
   baseline?: Entity,
 ): Promise<T> {

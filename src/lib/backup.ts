@@ -176,7 +176,7 @@ export function validateRelations(backup: Backup) {
 export async function importBackup(
   preview: ImportPreview,
   owner: string,
-  mode: "cloud" | "local" | "demo",
+  mode: "cloud" | "local",
   strategy: "merge" | "restore",
 ) {
   const { backup, blobs } = preview;

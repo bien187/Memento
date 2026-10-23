@@ -43,41 +43,6 @@ type Feed = {
   username: string | null;
   start_date: string;
 };
-const fictional: Person[] = [
-  {
-    id: "f1",
-    name: "Nina Keller",
-    username: "nina_k",
-    private_profile: true,
-    rank_id: "soldat",
-    branch_id: "sanitaet",
-    following: false,
-    requested: false,
-    followers: 8,
-  },
-  {
-    id: "f2",
-    name: "Jan Brunner",
-    username: "jan_b",
-    private_profile: false,
-    rank_id: "wachtmeister",
-    branch_id: "genie",
-    following: true,
-    requested: false,
-    followers: 12,
-  },
-  {
-    id: "f3",
-    name: "Lea Fischer",
-    username: "lea_f",
-    private_profile: true,
-    rank_id: "gefreiter",
-    branch_id: "logistik",
-    following: false,
-    requested: false,
-    followers: 6,
-  },
-];
 export function Community() {
   const { identity } = useStore(),
     toast = useToast(),
@@ -86,10 +51,8 @@ export function Community() {
   const [search, setSearch] = useState(""),
     [tab, setTab] = useState<"feed" | "people" | "requests">("feed"),
     [person, setPerson] = useState<Person | null>(null),
-    [local, setLocal] = useState(fictional),
     [busy, setBusy] = useState("");
-  const cloud = identity?.mode === "cloud",
-    demo = identity?.mode === "demo";
+  const cloud = identity?.mode === "cloud";
   const people = useQuery({
     queryKey: ["people", identity?.id, search],
     enabled: cloud,
@@ -135,20 +98,6 @@ export function Community() {
           cache.invalidateQueries({ queryKey: ["feed"] }),
           cache.invalidateQueries({ queryKey: ["requests"] }),
         ]);
-      } else if (demo) {
-        setLocal((list) =>
-          type === "block"
-            ? list.filter((p) => p.id !== target)
-            : list.map((p) =>
-                p.id === target
-                  ? {
-                      ...p,
-                      following: type === "follow" && !p.private_profile,
-                      requested: type === "follow" && p.private_profile,
-                    }
-                  : p,
-              ),
-        );
       }
       toast(
         type === "follow"
@@ -163,7 +112,7 @@ export function Community() {
       setBusy("");
     }
   }
-  if (!cloud && !demo)
+  if (!cloud)
     return (
       <>
         <div className="page-heading">
@@ -180,11 +129,7 @@ export function Community() {
         />
       </>
     );
-  const list = cloud
-    ? (people.data ?? [])
-    : local.filter((p) =>
-        `${p.name} ${p.username}`.toLowerCase().includes(search.toLowerCase()),
-      );
+  const list = people.data ?? [];
   return (
     <>
       <div className="page-heading">
@@ -198,12 +143,6 @@ export function Community() {
           </p>
         </div>
       </div>
-      {demo && (
-        <div className="draft-banner">
-          <Users size={17} />
-          <span>Fiktive Profile. Aktionen gelten nur für dieses Beispiel.</span>
-        </div>
-      )}
       <div className="journal-tabs">
         {(
           [

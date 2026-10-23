@@ -1,13 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
-async function demo(page: Page) {
-  await page.goto("/");
-  await page
-    .getByRole("button", { name: "Mit fiktivem Beispiel entdecken" })
-    .click();
-  await expect(
-    page.getByRole("heading", { name: "Meine Erinnerungen." }),
-  ).toBeVisible();
-}
+import { populateNotebook } from "./notebook-fixture";
 async function onboard(page: Page) {
   await page.goto("/");
   await page.getByRole("button", { name: "Lokales Tagebuch öffnen" }).click();
@@ -144,7 +136,7 @@ test("four images are accepted and a fifth is rejected", async ({ page }) => {
 test("milestones require confirmation to remove and views are distinct", async ({
   page,
 }) => {
-  await demo(page);
+  await populateNotebook(page);
   await page
     .getByRole("button", { name: "Meilenstein entfernen", exact: true })
     .first()
@@ -170,7 +162,7 @@ test("milestones require confirmation to remove and views are distinct", async (
 test("calendar, statistics and all major pages fit small screens", async ({
   page,
 }) => {
-  await demo(page);
+  await populateNotebook(page);
   for (const label of [
     "Kalender",
     "Statistik",
@@ -206,7 +198,7 @@ test("calendar, statistics and all major pages fit small screens", async ({
 test("books can be created, reordered, published, and exported", async ({
   page,
 }) => {
-  await demo(page);
+  await populateNotebook(page);
   await nav(page).getByRole("link", { name: "Profil", exact: true }).click();
   await page
     .getByRole("button", { name: "Buch erstellen", exact: true })
@@ -246,7 +238,7 @@ test("books can be created, reordered, published, and exported", async ({
   expect((await download).suggestedFilename()).toMatch(/\.pdf$/);
 });
 test("ZIP backup can be inspected and safely merged", async ({ page }) => {
-  await demo(page);
+  await populateNotebook(page);
   await nav(page).getByRole("link", { name: "Profil", exact: true }).click();
   const download = page.waitForEvent("download");
   await page.getByRole("button", { name: "ZIP sichern", exact: true }).click();
@@ -417,7 +409,7 @@ test("all branch insignia remain available offline and fit small screens in dark
 }) => {
   if (page.viewportSize()!.width < 760)
     await page.setViewportSize({ width: 320, height: 700 });
-  await demo(page);
+  await populateNotebook(page);
   await page.evaluate(async () => {
     await navigator.serviceWorker.ready;
   });
@@ -472,4 +464,57 @@ test("all branch insignia remain available offline and fit small screens in dark
     path: `test-results/insignia-${test.info().project.name}.png`,
     animations: "disabled",
   });
+});
+
+test("retired example sessions return to the real login without a demo entry point", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    if (!localStorage.getItem("retired-example-test")) {
+      const id = crypto.randomUUID();
+      localStorage.setItem(
+        "feldbuch.identity",
+        JSON.stringify({ id, mode: "demo" }),
+      );
+      localStorage.setItem("feldbuch.demo-id", id);
+      localStorage.setItem("retired-example-test", "1");
+    }
+  });
+  await page.goto("/");
+  const login = page.getByRole("button", { name: "Anmelden", exact: true });
+  await expect(login).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Mit fiktivem Beispiel entdecken" }),
+  ).toHaveCount(0);
+  await expect
+    .poll(() => page.evaluate(() => localStorage.getItem("feldbuch.demo-id")))
+    .toBeNull();
+  expect(
+    await page.evaluate(() => localStorage.getItem("feldbuch.identity")),
+  ).toBeNull();
+  if (await login.isEnabled()) {
+    await page.route("**/auth/v1/token?grant_type=password", (route) =>
+      route.fulfill({
+        status: 400,
+        contentType: "application/json",
+        body: JSON.stringify({
+          code: "invalid_credentials",
+          msg: "Ungültige Zugangsdaten.",
+        }),
+      }),
+    );
+    await page
+      .getByLabel("E-Mail", { exact: true })
+      .fill("login-check@example.invalid");
+    await page
+      .getByLabel("Passwort", { exact: true })
+      .fill("Testpasswort-2026!");
+    await login.click();
+    await expect(
+      page.getByRole("status").filter({ hasText: "Ungültige Zugangsdaten." }),
+    ).toBeVisible();
+    await expect(login).toBeEnabled();
+  } else {
+    await expect(page.locator(".setup-note")).toBeVisible();
+  }
 });

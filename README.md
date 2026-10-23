@@ -14,7 +14,7 @@ Die Oberfläche ist für Smartphones gestaltet und passt sich bis zum Desktop an
 
 Die App funktioniert **ohne Cloudkonto als lokales Tagebuch**. Mit einem eigenen
 Supabase-Projekt kommen Anmeldung, Synchronisation, Community und Freigabelinks hinzu.
-Neue Notizbücher starten leer. Ein fiktives Beispiel lässt sich ausdrücklich auswählen.
+Neue Konten und lokale Notizbücher starten leer. Die Anmeldung verwendet Supabase Auth.
 
 ## Ein Blick in die App
 
@@ -32,7 +32,7 @@ Neue Notizbücher starten leer. Ein fiktives Beispiel lässt sich ausdrücklich 
 </table>
 
 Alle Screenshots stammen aus der laufenden App. Namen, Dienstangaben, Texte und
-Bildmotive in der Beispielansicht sind fiktiv.
+Bildmotive in der Aufnahmen sind fiktiv und stammen ausschliesslich aus isolierten Testnotizbüchern.
 
 ## Was Memento kann
 
@@ -103,8 +103,8 @@ npm run dev
 
 Öffne [localhost:3000](http://localhost:3000).
 
-1. **Lokales Tagebuch öffnen** wählen und das Profil einrichten – oder das ausdrücklich
-   fiktive Beispiel zum Erkunden öffnen.
+1. Nach der Supabase-Konfiguration registrieren und **Anmelden** wählen.
+   Für ein gerätegebundenes Notizbuch steht **Lokales Tagebuch öffnen** zur Verfügung.
 2. Eine Dienstperiode mit Start- und Enddatum anlegen.
 3. Erinnerungen schreiben, Fotos ergänzen und besondere Tage als Meilenstein markieren.
 4. Im Profil ein RS-/WK-Buch erstellen oder die Daten als PDF beziehungsweise ZIP sichern.
@@ -143,8 +143,7 @@ Die genaue Reihenfolge, Befehle, Provider-Konfiguration und Testdaten stehen in
 **[DEPLOYMENT.md](DEPLOYMENT.md)**. Alle benötigten Variablen sind in
 [`.env.example`](.env.example) aufgeführt. Zugangsdaten gehören nicht ins Repository.
 
-Im lokalen Modus sind Community und öffentliche Freigaben nicht verfügbar. Die
-Beispielansicht kennzeichnet simulierte Inhalte. Echte Supabase-, OAuth- und
+Im lokalen Modus sind Community und öffentliche Freigaben nicht verfügbar. Echte Supabase-, OAuth- und
 Hosting-Verbindungen benötigen nach der Einrichtung eine eigene Live-Abnahme.
 
 ## Technik
@@ -186,7 +185,7 @@ npm run test:e2e
 ```
 
 Lokale Abnahme am **23.10.2026**: Typecheck und Produktionsbuild erfolgreich,
-**38 Vitest-Tests** sowie **20 Playwright-Tests** erfolgreich. Die Browserabläufe
+**41 Vitest-Tests** sowie **22 Playwright-Tests** erfolgreich. Die Browserabläufe
 prüfen unter anderem leere neue Notizbücher, Entwürfe, Offline-Neuladen, Bildgrenzen,
 Bücher, PDF und Backupimport auf Smartphone und Desktop.
 
@@ -210,8 +209,9 @@ In einem zweiten Terminal:
 node scripts/capture-readme-screenshots.mjs
 ```
 
-Das Skript öffnet Chrome mit einem frischen Browserprofil, wählt das fiktive Beispiel
-und speichert die neun Aufnahmen in `docs/screenshots`. Ein anderer laufender Server
+Das Skript öffnet Chrome mit einem frischen Browserprofil, erstellt ein isoliertes
+lokales Notizbuch und importiert Testdaten über den regulären Backupdialog. Es
+speichert die neun Aufnahmen in `docs/screenshots`. Ein anderer laufender Server
 kann über `MEMENTO_SCREENSHOT_URL` angegeben werden.
 
 Mehr zu Funktionen, Standortzuordnung und Bildquellen: [Militärkatalog](docs/MILITARY_CATALOG.md).

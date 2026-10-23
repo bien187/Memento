@@ -10,7 +10,7 @@ import {
 } from "@/lib/domain/dates";
 import { average, statistics } from "@/lib/domain/stats";
 import { entrySchema } from "@/lib/domain/models";
-import { demoRecords } from "@/lib/local/demo";
+import { demoRecords } from "./fixtures/notebook";
 describe("Swiss calendar dates", () => {
   it("starts on day one and changes week after seven calendar days", () => {
     expect(serviceDay("2026-01-12", "2026-01-12")).toBe(1);

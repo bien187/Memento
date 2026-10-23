@@ -216,9 +216,7 @@ export function App({ section: initialSection }: { section: string }) {
               <small>
                 {identity.mode === "cloud"
                   ? "Persönliches Konto"
-                  : identity.mode === "demo"
-                    ? "Fiktives Beispiel"
-                    : "Lokales Tagebuch"}
+                  : "Lokales Tagebuch"}
               </small>
             </span>
             <Link href="/profile" aria-label="Profil öffnen">
@@ -263,9 +261,7 @@ export function App({ section: initialSection }: { section: string }) {
           </div>
           <div className="topbar-status">
             {identity.mode !== "cloud" && (
-              <span className="mode-badge">
-                {identity.mode === "demo" ? "Beispiel" : "Lokal"}
-              </span>
+              <span className="mode-badge">Lokal</span>
             )}
             <button
               className="sync-indicator"

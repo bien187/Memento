@@ -1,7 +1,7 @@
 import { PGlite } from "@electric-sql/pglite";
 import { readFileSync, readdirSync } from "node:fs";
 import { beforeAll, afterAll, describe, it, expect } from "vitest";
-import { demoRecords } from "@/lib/local/demo";
+import { demoRecords } from "./fixtures/notebook";
 import type { Entity } from "@/lib/domain/models";
 
 const sql = new PGlite();

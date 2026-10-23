@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import sharp from "sharp";
-import { demoRecords } from "../src/lib/local/demo";
+import { demoRecords } from "../tests/fixtures/notebook";
 import { ranks, branches, functions } from "../src/lib/domain/catalogs";
 import {
   baseRecord,

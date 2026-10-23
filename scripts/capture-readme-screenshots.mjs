@@ -1,6 +1,11 @@
 import { mkdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { chromium, expect } from "@playwright/test";
+import { tsImport } from "tsx/esm/api";
+const { populateNotebook } = await tsImport(
+  "../e2e/notebook-fixture.ts",
+  import.meta.url,
+);
 
 const baseURL = process.env.MEMENTO_SCREENSHOT_URL ?? "http://localhost:3200";
 const output = fileURLToPath(new URL("../docs/screenshots/", import.meta.url));
@@ -37,14 +42,7 @@ async function demo(viewport, mobile = false) {
     timezoneId: "Europe/Zurich",
   });
   const page = await context.newPage();
-  await page.goto("/");
-  await page
-    .getByRole("button", { name: "Mit fiktivem Beispiel entdecken" })
-    .click();
-  await expect(
-    page.getByRole("heading", { name: "Meine Erinnerungen." }),
-  ).toBeVisible();
-  await expect(page.locator(".entry-card").last()).toHaveCSS("opacity", "1");
+  await populateNotebook(page);
   return page;
 }
 

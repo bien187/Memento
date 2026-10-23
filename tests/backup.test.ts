@@ -1,6 +1,6 @@
 import { afterEach, describe, it, expect } from "vitest";
 import { db, ownData } from "@/lib/local/db";
-import { demoRecords } from "@/lib/local/demo";
+import { demoRecords } from "./fixtures/notebook";
 import { defaultPreferences } from "@/lib/domain/models";
 import {
   backupSchema,

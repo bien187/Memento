@@ -1,8 +1,10 @@
 # Implementierungsstand
 
 Stand: 23.10.2026. Die App wird lokal im bestehenden Projekt umgesetzt.
-Supabase und Vercel werden separat eingerichtet; die Live-Abnahme dieser Dienste
-ist noch offen. Diese Lieferung verändert kein externes Cloudprojekt.
+Supabase und die Vercel-App `memento-v5la` sind eingerichtet. Die Anmeldung und
+die Entfernung des öffentlichen Beispielmodus sind am Produktionsbuild geprüft.
+Echter E-Mail-/Passwort-Login gegen Supabase: Cloudsession und leeres Onboarding
+erfolgreich; das temporäre Prüfkonto ist anschliessend gelöscht.
 
 | Phase           | Quellcode/Verhalten                                          | Abnahme                                          |
 | --------------- | ------------------------------------------------------------ | ------------------------------------------------ |
@@ -34,16 +36,22 @@ ist noch offen. Diese Lieferung verändert kein externes Cloudprojekt.
 - Publizierte Medien werden aus Gründen der Versionskonsistenz aufbewahrt. Entfernen
   aus einem aktuellen Eintrag ist kein physisches Löschen früher veröffentlichter Kopien.
 - Das vollständige Löschen eines Cloudkontos braucht den serverseitigen Service-Role-Key.
-- Echte Supabase-/OAuth-/Vercel-Integration sowie reale iOS-/Android-Geräte sind ohne
-  diese externen Zugänge nicht als erfolgreich getestet ausgewiesen.
+- Der E-Mail-Login wurde gegen das echte Supabase-Projekt geprüft. Die übrige
+  Live-Abnahme (Storage, Freigaben, OAuth-Consent) und reale iOS-/Android-Geräte
+  sind davon getrennt und noch nicht vollständig abgenommen.
 
 Die jeweils tatsächlich ausgeführten Prüfergebnisse werden bei der abschliessenden
 Übergabe angegeben. Installations-/Hostinghinweise stehen in DEPLOYMENT.md.
 
-Lokale Schlussabnahme: Typecheck und Produktionsbuild erfolgreich, **38 Vitest-Tests**
-und **20 Playwright-Tests** erfolgreich. Die Browserprüfung verwendet den
+Lokale Schlussabnahme: Typecheck und Produktionsbuild erfolgreich, **41 Vitest-Tests**
+und **22 Playwright-Tests** erfolgreich. Die Browserprüfung verwendet den
 Produktionsbuild und schliesst ein vollständiges Offline-Neuladen ein.
 
 Das Memento-Branding ist mit Haupt-/Mini-SVG, ICO, Apple-/PWA-/Maskable-PNGs,
 Open-Graph-Bild, Metadaten und wiederverwendeter Wortmarke integriert. Technische
 Datenbank- und Backupbezeichner bleiben kompatibel.
+
+Der öffentliche Beispielmodus, lokale Testprofile und simulierte Community-Konten
+sind aus dem Produkt entfernt. Frühere Beispielidentitäten werden beim Start
+bereinigt; persönliche lokale Notizbücher bleiben bestehen. Tests und
+Screenshot-Erzeugung verwenden isolierte Datenimporte, keinen Demo-Login.

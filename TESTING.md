@@ -3,14 +3,17 @@
 ## Ausgeführte Abnahme am 23.10.2026
 
 - TypeScript strict und Next.js-Produktionsbuild: erfolgreich.
-- Vitest: **38 Tests in 7 Dateien erfolgreich**.
-- Playwright am frisch erstellten Produktionsbuild: **20 Tests erfolgreich**
-  (zehn Abläufe jeweils auf Smartphone und Desktop, einschliesslich Offline-Neuladen).
+- Vitest: **41 Tests in 8 Dateien erfolgreich**.
+- Playwright am frisch erstellten Produktionsbuild: **22 Tests erfolgreich**
+  (elf Abläufe jeweils auf Smartphone und Desktop, einschliesslich Offline-Neuladen).
 - Kleine Bildschirmbreite 320 px ohne horizontales Überlaufen geprüft.
 - Icon-Abmessungen, ICO-Einträge, deckendes Apple-/Maskable-Icon und visuelle
   Memento-Integration geprüft. Lockdatei per `npm ci --dry-run --offline` geprüft.
-- Echte Supabase-Auth/Storage-, Google-/Apple- und Vercel-Verbindungen wurden ohne
-  externe Zugangsdaten **nicht** als erfolgreich abgenommen.
+- E-Mail-/Passwort-Login gegen das eingerichtete Supabase-Projekt erfolgreich:
+  echte Cloudsession und leeres Onboarding am Produktionsbuild geprüft. Das nur
+  dafür angelegte, markierte Prüfkonto wurde anschliessend gelöscht.
+- Die vollständige Live-Abnahme von Storage, Freigaben, E-Mail-Zustellung und
+  Google-/Apple-Consent bleibt ein eigener Prüfumfang; sie folgt nicht aus dem Login-Test.
 
 ## Automatische Prüfungen
 
@@ -54,7 +57,9 @@ Neuladen, Entwurfswiederherstellung, Offline-Schreiben, Suche, vier/fünf Fotos,
 Meilensteinbestätigung, drei Ansichten, Hauptnavigation, Buchsortierung/-versionen,
 PDF-Download, ZIP-Import, vollständiges Offline-Neuladen, Teamfilter, getrennte
 Kasernenangaben, Offline-Navigation mit Browser-Zurück und alle 24 Abzeichen im
-dunklen Modus bei 320 px. Fehler speichern Trace
+dunklen Modus bei 320 px sowie Rückkehr alter Beispielidentitäten zur echten Anmeldung.
+Testnotizbücher werden über einen regulären ZIP-Import eingerichtet; es gibt keinen
+öffentlichen Demo-Einstieg. Fehler speichern Trace
 und Screenshot in `test-results`; HTML-Bericht: `playwright-report/index.html`.
 
 Eine reale iOS-/Android-Geräteprüfung mit virtueller Tastatur, HEIC-Originalen,

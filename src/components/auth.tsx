@@ -200,14 +200,6 @@ export function Auth() {
               Lokales Tagebuch öffnen
               <ArrowUpRight size={16} />
             </Button>
-            <button
-              className="text-button"
-              onClick={() =>
-                void enterLocal(true).catch((e) => toast(message(e)))
-              }
-            >
-              Mit fiktivem Beispiel entdecken <ArrowRight size={14} />
-            </button>
             <small>
               Lokale Daten bleiben in diesem Browser. Regelmässig ein Backup
               exportieren.

@@ -18,10 +18,10 @@ import {
   type EntityTable,
   type Preferences,
 } from "@/lib/domain/models";
-import { loadDemo } from "@/lib/local/demo";
+import { removeRetiredDemo } from "@/lib/local/retired-demo";
 import { FeedbackProvider, useToast } from "./ui";
 import { message } from "@/lib/utils";
-type Identity = { id: string; mode: "cloud" | "local" | "demo" };
+type Identity = { id: string; mode: "cloud" | "local" };
 type Data = Awaited<ReturnType<typeof ownData>>;
 type Store = {
   identity: Identity | null;
@@ -35,7 +35,7 @@ type Store = {
     value: T,
     baseline?: Entity,
   ) => Promise<T>;
-  enterLocal: (demo?: boolean) => Promise<void>;
+  enterLocal: () => Promise<void>;
   logout: () => Promise<void>;
   refresh: () => Promise<void>;
   setPreferences: (value: Partial<Preferences>) => Promise<void>;
@@ -76,8 +76,9 @@ function StoreProvider({ children }: PropsWithChildren) {
     async function init() {
       try {
         const raw = localStorage.getItem("feldbuch.identity");
+        await removeRetiredDemo(localStorage);
         const cached: Identity | null = raw ? JSON.parse(raw) : null;
-        if (cached && cached.mode !== "cloud") {
+        if (cached?.mode === "local") {
           if (active) changeIdentity(cached);
         } else if (cached && cached.mode === "cloud" && !navigator.onLine) {
           if (active) changeIdentity(cached);
@@ -196,18 +197,15 @@ function StoreProvider({ children }: PropsWithChildren) {
     },
     [identity, online, refresh, toast],
   );
-  async function enterLocal(demo = false) {
-    let id = localStorage.getItem(
-      demo ? "feldbuch.demo-id" : "feldbuch.local-id",
-    );
+  async function enterLocal() {
+    let id = localStorage.getItem("feldbuch.local-id");
     if (!id) {
       id = crypto.randomUUID();
-      localStorage.setItem(demo ? "feldbuch.demo-id" : "feldbuch.local-id", id);
+      localStorage.setItem("feldbuch.local-id", id);
     }
-    if (demo) await loadDemo(id);
-    else if (!(await db.user_preferences.get(id)))
+    if (!(await db.user_preferences.get(id)))
       await db.user_preferences.put(defaultPreferences(id));
-    changeIdentity({ id, mode: demo ? "demo" : "local" });
+    changeIdentity({ id, mode: "local" });
   }
   async function logout() {
     if (identity?.mode === "cloud") await supabase().auth.signOut();

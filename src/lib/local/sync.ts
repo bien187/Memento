@@ -214,7 +214,7 @@ export async function sync(owner: string) {
 export async function resolveConflict(
   op: Operation,
   choice: "local" | "remote",
-  mode: "cloud" | "local" | "demo" = "cloud",
+  mode: "cloud" | "local" = "cloud",
 ) {
   if (choice === "remote") {
     await db.transaction("rw", db.table(op.table), db.operations, async () => {

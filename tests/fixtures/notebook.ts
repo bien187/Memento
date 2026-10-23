@@ -1,14 +1,12 @@
 import {
   baseRecord,
-  defaultPreferences,
   type Profile,
   type Period,
   type Entry,
   type Book,
   type BookVersion,
-} from "../domain/models";
-import { addDays } from "../domain/dates";
-import { db } from "./db";
+} from "../../src/lib/domain/models";
+import { addDays } from "../../src/lib/domain/dates";
 export function demoRecords(owner: string) {
   const profile: Profile = {
     ...baseRecord(owner, owner),
@@ -116,83 +114,4 @@ export function demoRecords(owner: string) {
     archived: false,
   };
   return { profile, period, entries, book, version };
-}
-export async function loadDemo(owner: string) {
-  if (await db.profiles.get(owner)) return;
-  const { profile, period, entries, book, version } = demoRecords(owner);
-  await db.transaction("rw", db.tables, async () => {
-    await db.profiles.put(profile);
-    await db.service_periods.put(period);
-    await db.diary_entries.bulkPut(entries);
-    await db.books.put(book);
-    await db.book_versions.put(version);
-    await db.user_preferences.put({
-      ...defaultPreferences(owner),
-      active_period_id: period.id,
-    });
-  });
-  // Self-drawn, clearly fictional sample media. No network images, people or location data.
-  const canvas = document.createElement("canvas");
-  canvas.width = 1200;
-  canvas.height = 800;
-  const c = canvas.getContext("2d");
-  if (!c) return;
-  for (const [i, entry] of entries.filter((_, i) => i % 5 === 0).entries()) {
-    c.fillStyle = "#d9dfd4";
-    c.fillRect(0, 0, 1200, 800);
-    c.fillStyle = "#8f9b83";
-    c.beginPath();
-    c.moveTo(0, 600);
-    c.lineTo(350, 200 + i * 15);
-    c.lineTo(700, 650);
-    c.lineTo(1000, 280);
-    c.lineTo(1200, 620);
-    c.lineTo(1200, 800);
-    c.lineTo(0, 800);
-    c.fill();
-    c.fillStyle = "#53604b";
-    c.beginPath();
-    c.moveTo(0, 800);
-    c.lineTo(500, 480);
-    c.lineTo(1200, 800);
-    c.fill();
-    c.fillStyle = "#253326";
-    c.font = "24px sans-serif";
-    c.fillText("FIKTIVES BILDMOTIV / MEMENTO", 50, 70);
-    const blob = await new Promise<Blob | null>((resolve) =>
-      canvas.toBlob(resolve, "image/jpeg", 0.8),
-    );
-    if (!blob) continue;
-    const id = crypto.randomUUID();
-    await db.entry_media.put({
-      ...baseRecord(owner, id),
-      entry_id: entry.id,
-      name: "Fiktive Landschaft.jpg",
-      mime: "image/jpeg",
-      size: blob.size,
-      storage_path: null,
-      blob,
-    });
-    await db.diary_entries.update(entry.id, { media_ids: [id], cover_id: id });
-  }
-  const savedEntries = await db.diary_entries
-    .where("period_id")
-    .equals(period.id)
-    .toArray();
-  const savedMedia = await db.entry_media
-    .where("owner_id")
-    .equals(owner)
-    .toArray();
-  book.cover_id = savedEntries.find((e) => e.cover_id)?.cover_id ?? null;
-  await db.books.put(book);
-  await db.book_versions.put({
-    ...version,
-    snapshot: {
-      book,
-      period,
-      entries: savedEntries,
-      media: savedMedia.map(({ blob: _, ...m }) => m),
-      display_name: profile.name,
-    },
-  });
 }

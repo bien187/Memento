@@ -1,4 +1,4 @@
-const CACHE = "memento-shell-v3";
+const CACHE = "memento-shell-v4";
 const SHELL = [
   "/",
   "/logo.svg",

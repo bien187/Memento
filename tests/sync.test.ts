@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { FeldbuchDB, saveEntity } from "@/lib/local/db";
 import { acceptSync, mergeRemote } from "@/lib/local/sync";
-import { demoRecords } from "@/lib/local/demo";
+import { demoRecords } from "./fixtures/notebook";
 const databases: FeldbuchDB[] = [];
 const setup = () => {
   const database = new FeldbuchDB(`test-${crypto.randomUUID()}`);

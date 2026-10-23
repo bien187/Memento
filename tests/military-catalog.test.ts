@@ -10,7 +10,7 @@ import {
 } from "@/lib/domain/barracks";
 import { insigniaForBranch } from "@/lib/domain/insignia";
 import { profileSchema, periodSchema } from "@/lib/domain/models";
-import { demoRecords } from "@/lib/local/demo";
+import { demoRecords } from "./fixtures/notebook";
 import manifest from "../public/insignia/manifest.json";
 
 describe("military function, location and insignia catalogs", () => {

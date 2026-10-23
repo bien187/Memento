@@ -243,11 +243,9 @@ export function ProfileView() {
         </div>
         <div className="profile-identity">
           <p className="eyebrow">
-            {identity?.mode === "demo"
-              ? "Vollständig fiktives Beispielprofil"
-              : identity?.mode === "cloud"
-                ? "Persönliches Konto"
-                : "Lokal auf diesem Gerät"}
+            {identity?.mode === "cloud"
+              ? "Persönliches Konto"
+              : "Lokal auf diesem Gerät"}
           </p>
           <h2>{profile.name}</h2>
           {profile.username && <p className="muted">@{profile.username}</p>}
@@ -286,15 +284,11 @@ export function ProfileView() {
             <span>Meilensteine</span>
           </div>
           <button onClick={() => setConnections("followers")}>
-            <strong>
-              {identity?.mode === "demo" ? 8 : (counts.data?.followers ?? 0)}
-            </strong>
+            <strong>{counts.data?.followers ?? 0}</strong>
             <span>Follower</span>
           </button>
           <button onClick={() => setConnections("following")}>
-            <strong>
-              {identity?.mode === "demo" ? 1 : (counts.data?.following ?? 0)}
-            </strong>
+            <strong>{counts.data?.following ?? 0}</strong>
             <span>Gefolgt</span>
           </button>
         </div>
