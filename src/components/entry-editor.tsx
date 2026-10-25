@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import {
   baseRecord,
-  entrySchema,
+  entryInputSchema,
   scaleLabel,
   type Entry,
   type Period,
@@ -78,7 +78,7 @@ export function EntryEditor({
     setStatus("Wird lokal gesichert …");
   };
   async function persist(next: Entry, final = false) {
-    const parsed = entrySchema.parse(next);
+    const parsed = entryInputSchema.parse(next);
     if (!inPeriod(next.date, period.start_date, period.end_date))
       throw new Error("Das Datum muss innerhalb der Dienstperiode liegen.");
     if (
@@ -93,7 +93,7 @@ export function EntryEditor({
       );
     baseline.current = await save(
       "diary_entries",
-      parsed,
+      { ...next, ...parsed },
       baseline.current ?? undefined,
     );
     for (const id of next.media_ids) {

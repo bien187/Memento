@@ -1,5 +1,17 @@
 # Implementierungsstand
 
+## Aktualisierung vom 25.10.2026
+
+Zeitstempelkorrektur, dynamische Themes für alle Truppengattungen, direkt
+aufrufbare Community-Profile, Freigabeoptionen, gezielte Medienautorisierung und
+der paginierte Feed sind lokal umgesetzt. **67 Vitest-Tests und 30 Browserprüfungen**,
+Typecheck und Produktionsbuild sind erfolgreich. Die beiden neuen Migrationen
+müssen vor dem neuen Client im eigenen Supabase-Projekt angewendet werden.
+Diese Überarbeitung enthält keine externe Cloud- oder Hosting-Abnahme.
+[Vollständiger Bericht](docs/REVIEW_2026-10-25.md).
+
+## Vorheriger Stand
+
 Stand: 23.10.2026. Die App wird lokal im bestehenden Projekt umgesetzt.
 Supabase und die Vercel-App `memento-v5la` sind eingerichtet. Die Anmeldung und
 die Entfernung des öffentlichen Beispielmodus sind am Produktionsbuild geprüft.

@@ -3,36 +3,18 @@ import { z } from "zod";
 import { db, ownData, saveEntity } from "./local/db";
 import {
   schemas,
-  bookSchema,
-  periodSchema,
-  entrySchema,
-  mediaSchema,
+  bookVersionSchema,
+  timestampSchema,
   type EntityTable,
   type BookVersion,
   type Snapshot,
   type Entity,
 } from "./domain/models";
 import { supabase, cloudConfigured } from "./supabase/browser";
-const snapshotSchema = z.object({
-  book: bookSchema,
-  period: periodSchema,
-  entries: z.array(entrySchema),
-  media: z.array(mediaSchema),
-  display_name: z.string().max(100),
-});
-const versionSchema = z.object({
-  id: z.uuid(),
-  owner_id: z.uuid(),
-  book_id: z.uuid(),
-  number: z.number().int().positive(),
-  snapshot: snapshotSchema,
-  created_at: z.iso.datetime(),
-  archived: z.boolean(),
-});
 export const backupSchema = z.object({
   format: z.literal("feldbuch"),
   schema_version: z.literal(1),
-  exported_at: z.iso.datetime(),
+  exported_at: timestampSchema,
   owner_id: z.uuid(),
   data: z.object({
     profiles: z.array(schemas.profiles).max(1),
@@ -40,7 +22,7 @@ export const backupSchema = z.object({
     diary_entries: z.array(schemas.diary_entries).max(50000),
     entry_media: z.array(schemas.entry_media).max(200000),
     books: z.array(schemas.books).max(1000),
-    book_versions: z.array(versionSchema).max(5000),
+    book_versions: z.array(bookVersionSchema).max(5000),
     user_preferences: z.array(schemas.user_preferences).max(1),
   }),
 });

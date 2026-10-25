@@ -46,7 +46,12 @@ export function App({ section: initialSection }: { section: string }) {
   // The cached shell is shared by all five pages. Its server prop can still
   // describe the diary after an offline reload at a different URL.
   const section =
-    nav.find((item) => item.path === pathname)?.key ?? initialSection;
+    (pathname.startsWith("/community/")
+      ? "community"
+      : nav.find((item) => item.path === pathname)?.key) ?? initialSection;
+  const profileId = /^\/community\/profile\/([0-9a-f-]{36})$/i.exec(
+    pathname,
+  )?.[1];
   const store = useStore(),
     { identity, data, ready, online, setPreferences, refresh } = store;
   const toast = useToast();
@@ -349,7 +354,7 @@ export function App({ section: initialSection }: { section: string }) {
                 text="Deine Auswertungen entstehen mit deinen ersten Einträgen."
               />
             ))}
-          {section === "community" && <Community />}
+          {section === "community" && <Community profileId={profileId} />}
           {section === "profile" && <ProfileView />}
           <footer className="page-footer">
             <span>MEMENTO / DEINE ERINNERUNGEN</span>
@@ -376,7 +381,7 @@ export function App({ section: initialSection }: { section: string }) {
             </Link>
           ))}
         </nav>
-        {section !== "profile" && (
+        {section !== "profile" && section !== "community" && (
           <Button
             className="mobile-write"
             size="icon"

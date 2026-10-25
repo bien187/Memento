@@ -7,6 +7,11 @@ privaten Storage und Sync-/Community-RPCs. `202610220002_hardening.sql` ergänzt
 unveränderliche Versionen/Medien, Archivierung und weitere Integritätsprüfungen.
 `202610220003_military_catalog.sql` ergänzt 125 Funktionen in vier Teams,
 Standorte, Funktionszuordnungen, Abzeichenpfade und private Kasernenfelder.
+`202610250001_entry_timestamps.sql` übergibt technische Eintragszeitstempel an
+PostgreSQL und schützt bestehende Erstellungszeiten.
+`202610250002_community_profiles.sql` ergänzt ausdrückliche Profilfreigaben,
+öffentliche Profilprojektionen für angemeldete Benutzer, Pagination und gezielte
+Bildberechtigungen. Die privaten Basistabellen behalten ihre Eigentümer-RLS.
 `supabase/seed.sql` enthält ausschliesslich durchsuchbare Katalogdaten.
 
 | Bereich           | Tabellen                                                                                                             | Zugriff                                                         |

@@ -1,21 +1,17 @@
 import { db, type Operation, type FeldbuchDB } from "./db";
 import { supabase } from "../supabase/browser";
-import type {
-  Entity,
-  EntityTable,
-  Media,
-  Book,
-  Chapter,
-  BookItem,
-} from "../domain/models";
+import { z } from "zod";
+import { parseEntity, mediaSchema, itemSchema } from "../domain/models";
+import type { Entity, EntityTable } from "../domain/models";
 import { message } from "../utils";
 import { uploadPrivateBlob } from "./upload";
 const running = new Map<string, Promise<void>>();
 export async function acceptSync(
   op: Operation,
-  result: Entity,
+  result: unknown,
   database: FeldbuchDB = db,
 ) {
+  const record = parseEntity(op.table, result);
   await database.transaction(
     "rw",
     database.table(op.table),
@@ -29,39 +25,43 @@ export async function acceptSync(
       if (pending?.id === op.id) {
         await database
           .table(op.table)
-          .put({ ...result, ...(local?.blob ? { blob: local.blob } : {}) });
+          .put({ ...record, ...(local?.blob ? { blob: local.blob } : {}) });
         await database.operations.delete(op.id);
-      } else if (pending && "version" in result) {
+      } else if (pending && "version" in record) {
         const extra =
-          op.table === "entry_media" && "storage_path" in result
-            ? { storage_path: result.storage_path }
-            : {};
+          op.table === "entry_media" && "storage_path" in record
+            ? { storage_path: record.storage_path }
+            : op.table === "diary_entries" && "created_at" in record
+              ? { created_at: record.created_at }
+              : {};
         await database.operations.update(pending.id, {
-          base_version: result.version,
-          payload: {
+          base_version: record.version,
+          payload: parseEntity(op.table, {
             ...pending.payload,
             ...extra,
-            version: result.version,
-          } as Entity,
+            version: record.version,
+          }),
         });
         await database
           .table(op.table)
-          .put({ ...local, ...extra, version: result.version });
+          .put({ ...local, ...extra, version: record.version });
       }
     },
   );
 }
 export async function mergeRemote(
   table: EntityTable,
-  records: Entity[],
+  records: unknown[],
   database: FeldbuchDB = db,
 ) {
+  // Validate the complete batch before writing any remote records.
+  const validated = records.map((record) => parseEntity(table, record));
   await database.transaction(
     "rw",
     database.table(table),
     database.operations,
     async () => {
-      for (const record of records) {
+      for (const record of validated) {
         const pending = await database.operations
           .where("[table+entity_id]")
           .equals([table, record.id])
@@ -76,6 +76,29 @@ export async function mergeRemote(
     },
   );
 }
+export function syncPayload(table: EntityTable, value: Entity) {
+  const record = parseEntity(table, value);
+  if (!("updated_at" in record)) return record;
+  const { updated_at: _, ...mutable } = record;
+  if (table === "diary_entries" && "created_at" in mutable) {
+    const { created_at: __, ...input } = mutable;
+    return input;
+  }
+  return mutable;
+}
+const responseSchema = z.object({
+  conflict: z.boolean().optional(),
+  record: z.unknown(),
+});
+const remoteChapterSchema = z.object({
+  id: z.uuid(),
+  book_id: z.uuid(),
+  title: z.string().max(160),
+  position: z.number().int().nonnegative(),
+  book_items: z.array(
+    itemSchema.extend({ position: z.number().int().nonnegative() }),
+  ),
+});
 async function syncWork(owner: string) {
   const client = supabase();
   const operations = await db.operations
@@ -106,19 +129,17 @@ async function syncWork(owner: string) {
   )) {
     if (op.status !== "pending" || op.next_at > Date.now()) continue;
     try {
-      let payload = op.payload;
+      let payload = syncPayload(op.table, op.payload);
       if (op.table === "entry_media") {
-        const media = payload as Media;
+        const media = mediaSchema.parse(op.payload);
         const local = await db.entry_media.get(media.id);
         if (!media.storage_path && local?.blob) {
           const path = `${owner}/${media.id}.${media.mime.split("/")[1]}`;
           await uploadPrivateBlob(path, local.blob, (progress) => {
             void db.operations.update(op.id, { progress }).catch(() => {});
           });
-          payload = { ...media, storage_path: path };
+          payload = syncPayload(op.table, { ...media, storage_path: path });
         }
-        const { blob: _, ...clean } = payload as Media;
-        payload = clean;
       }
       const { data, error } = await client.rpc("sync_entity", {
         entity_table: op.table,
@@ -127,7 +148,8 @@ async function syncWork(owner: string) {
         operation_id: op.id,
       });
       if (error) throw error;
-      if (data.conflict) {
+      const response = responseSchema.parse(data);
+      if (response.conflict) {
         const latest = await db.operations
           .where("[table+entity_id]")
           .equals([op.table, op.entity_id])
@@ -135,13 +157,16 @@ async function syncWork(owner: string) {
         if (latest)
           await db.operations.update(latest.id, {
             status: "conflict",
-            remote: data.record,
+            remote:
+              response.record === null
+                ? undefined
+                : parseEntity(op.table, response.record),
             error: "Dieser Datensatz wurde auf einem anderen Gerät geändert.",
             source: "server",
           });
         continue;
       }
-      await acceptSync(op, data.record);
+      await acceptSync(op, parseEntity(op.table, response.record));
     } catch (error) {
       const attempts = op.attempts + 1;
       await db.operations.update(op.id, {
@@ -164,28 +189,23 @@ async function syncWork(owner: string) {
         .select("*,book_items(*)")
         .eq("owner_id", owner);
       if (ce) throw ce;
+      const remoteChapters = z.array(remoteChapterSchema).parse(chapters ?? []);
+      const books = z
+        .array(z.record(z.string(), z.unknown()))
+        .parse(data ?? []);
       await mergeRemote(
         table,
-        ((data ?? []) as Omit<Book, "chapters">[]).map((b) => ({
+        books.map((b) => ({
           ...b,
-          chapters: (
-            (chapters ?? []) as (Chapter & {
-              book_id: string;
-              position: number;
-              book_items: (BookItem & { position: number })[];
-            })[]
-          )
+          chapters: remoteChapters
             .filter((c) => c.book_id === b.id)
             .sort((a, b) => a.position - b.position)
             .map((c) => ({
               id: c.id,
               title: c.title,
               items: c.book_items
-                .sort(
-                  (a: { position: number }, b: { position: number }) =>
-                    a.position - b.position,
-                )
-                .map((i: BookItem) => ({
+                .sort((a, b) => a.position - b.position)
+                .map((i) => ({
                   id: i.id,
                   kind: i.kind,
                   entry_id: i.entry_id,
@@ -194,9 +214,22 @@ async function syncWork(owner: string) {
                   media_ids: i.media_ids,
                 })),
             })),
-        })) as Book[],
+        })),
       );
-    } else await mergeRemote(table, (data ?? []) as Entity[]);
+    } else await mergeRemote(table, data ?? []);
+  }
+}
+async function drainSync(owner: string) {
+  // Edits queued while an RPC is in flight are processed in the same refresh.
+  // Future retries and conflicts must never cause an immediate retry loop.
+  for (let pass = 0; pass < 5 && navigator.onLine; pass++) {
+    await syncWork(owner);
+    const due = await db.operations
+      .where("owner_id")
+      .equals(owner)
+      .filter((op) => op.status === "pending" && op.next_at <= Date.now())
+      .count();
+    if (!due) return;
   }
 }
 export async function sync(owner: string) {
@@ -205,8 +238,10 @@ export async function sync(owner: string) {
   if (existing) return existing;
   const work = (
     navigator.locks
-      ? navigator.locks.request(`feldbuch-sync-${owner}`, () => syncWork(owner))
-      : syncWork(owner)
+      ? navigator.locks.request(`feldbuch-sync-${owner}`, () =>
+          drainSync(owner),
+        )
+      : drainSync(owner)
   ).finally(() => running.delete(owner));
   running.set(owner, work);
   return work;

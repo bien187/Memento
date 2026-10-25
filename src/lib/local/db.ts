@@ -1,4 +1,5 @@
 import Dexie, { type Table } from "dexie";
+import { parseEntity } from "../domain/models";
 import type {
   Profile,
   Period,
@@ -63,6 +64,7 @@ export async function saveEntity<T extends Entity>(
   database = db,
   baseline?: Entity,
 ): Promise<T> {
+  parseEntity(table, value);
   return database.transaction(
     "rw",
     database.table(table),
@@ -76,6 +78,10 @@ export async function saveEntity<T extends Entity>(
         .first();
       const next = {
         ...value,
+        // Creation metadata belongs to the stored record, never to an edit.
+        ...(table === "diary_entries" && old && "created_at" in old
+          ? { created_at: old.created_at }
+          : {}),
         ...("version" in value
           ? {
               version: old && "version" in old ? old.version : 0,

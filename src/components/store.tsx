@@ -21,6 +21,7 @@ import {
 import { removeRetiredDemo } from "@/lib/local/retired-demo";
 import { FeedbackProvider, useToast } from "./ui";
 import { message } from "@/lib/utils";
+import { applyBranchTheme } from "@/lib/domain/theme";
 type Identity = { id: string; mode: "cloud" | "local" };
 type Data = Awaited<ReturnType<typeof ownData>>;
 type Store = {
@@ -143,22 +144,19 @@ function StoreProvider({ children }: PropsWithChildren) {
     }
   }, [online, identity, refresh]);
   useEffect(() => {
-    const preference = data?.user_preferences[0];
-    const theme = preference?.theme ?? "system";
+    const theme = data?.user_preferences[0]?.theme ?? "system";
+    const branchId = data?.profiles[0]?.branch_id;
     const media = matchMedia("(prefers-color-scheme: dark)");
     const apply = () =>
-      document.documentElement.setAttribute(
-        "data-theme",
+      applyBranchTheme(
+        document.documentElement,
+        branchId,
         theme === "system" ? (media.matches ? "dark" : "light") : theme,
       );
     apply();
     media.addEventListener("change", apply);
     return () => media.removeEventListener("change", apply);
-  }, [data?.user_preferences]);
-  useEffect(() => {
-    document.documentElement.dataset.branch =
-      data?.profiles[0]?.branch_id ?? "";
-  }, [data?.profiles[0]?.branch_id]);
+  }, [data?.user_preferences[0]?.theme, data?.profiles[0]?.branch_id]);
   const save = useCallback(
     async <T extends Entity>(
       table: EntityTable,
