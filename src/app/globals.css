@@ -3858,6 +3858,9 @@ input.subtitle-input {
   .public-entry-toolbar .journal-tabs button {
     font-size: 11px;
     padding-inline: 9px;
+  }
+}
+
 /* Public demo (/demo) */
 .demo-banner {
   display: flex;
