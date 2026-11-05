@@ -21,6 +21,7 @@ import {
 import { seedDemo } from "@/lib/demo/seed";
 import {
   bookSchema,
+  bookVersionSchema,
   entrySchema,
   mediaSchema,
   periodSchema,
@@ -69,6 +70,7 @@ describe("demo data", () => {
     demoEntries.forEach((e) => entrySchema.parse(e));
     demoMedia.forEach(({ file: _file, ...m }) => mediaSchema.parse(m));
     bookSchema.parse(demoBook);
+    bookVersionSchema.parse(demoVersion);
     preferencesSchema.parse(demoPreferences);
   });
   it("is complete enough to show the main features", () => {

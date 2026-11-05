@@ -10,8 +10,9 @@ realen Cloudprojekt ausgeführt.
 ## 1. Supabase
 
 1. Ein eigenes Supabase-Projekt erstellen; bewusst eine passende Datenregion wählen.
-2. Mit der Supabase CLI anmelden und verbinden (einschliesslich der neuen Migration
-   `202610220003_military_catalog.sql` für Funktionen, Kasernen und Sync):
+2. Mit der Supabase CLI anmelden und verbinden. Alle Migrationen in Dateireihenfolge
+   anwenden, einschliesslich `202610250001_entry_timestamps.sql` und
+   `202610250002_community_profiles.sql`, bevor die neue Clientversion bereitgestellt wird:
 
    ```sh
    npx supabase login

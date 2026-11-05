@@ -24,7 +24,7 @@ export function Button({
   size,
   asChild = false,
   ...props
-}: React.ButtonHTMLAttributes<HTMLButtonElement> &
+}: React.ComponentProps<"button"> &
   VariantProps<typeof variants> & { asChild?: boolean }) {
   const Component = asChild ? Slot : "button";
   return (

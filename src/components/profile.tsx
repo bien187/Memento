@@ -1,5 +1,7 @@
 "use client";
 import { useState } from "react";
+import Link from "next/link";
+import { profileHref } from "@/lib/domain/community";
 import { useQuery } from "@tanstack/react-query";
 import { useLiveQuery } from "dexie-react-hooks";
 import {
@@ -429,6 +431,44 @@ export function ProfileView() {
               </Button>
             }
           />
+          {(
+            [
+              [
+                "share_function",
+                "Funktion im Community-Profil",
+                "Deine Grundfunktion auf deinem Profil anzeigen.",
+              ],
+              [
+                "share_service_period",
+                "Dienstperioden im Community-Profil",
+                "Art, Beginn und Ende freigeben. Einheit und Kaserne bleiben privat.",
+              ],
+              [
+                "share_connections",
+                "Verbindungen im Community-Profil",
+                "Follower, gefolgte Personen und deren Anzahl freigeben.",
+              ],
+            ] as const
+          ).map(([key, title, text]) => (
+            <Setting
+              key={key}
+              title={title}
+              text={text}
+              action={
+                <input
+                  type="checkbox"
+                  aria-label={title}
+                  checked={profile[key] ?? false}
+                  onChange={(event) =>
+                    void save("profiles", {
+                      ...profile,
+                      [key]: event.target.checked,
+                    }).catch((error) => toast(message(error)))
+                  }
+                />
+              }
+            />
+          ))}
         </div>
       </section>
       <section className="profile-section">
@@ -894,10 +934,13 @@ export function ProfileView() {
           ) : (
             following.data.map((p) => (
               <div className="share-row" key={p.id}>
-                <div>
+                <Link
+                  href={profileHref(p.id)}
+                  onClick={() => setConnections(null)}
+                >
                   <strong>{p.name}</strong>
                   <small>@{p.username}</small>
-                </div>
+                </Link>
                 {connections === "blocked" && (
                   <Button
                     variant="outline"

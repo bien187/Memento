@@ -1,5 +1,15 @@
 # Tests und Abnahme
 
+## Schlussabnahme vom 25.10.2026
+
+Typecheck und Produktionsbuild erfolgreich; **67 Vitest-Tests in 13 Dateien**,
+**24 reguläre Browserprüfungen** und **6 Community-Browserprüfungen** erfolgreich.
+Die Community-Integration verwendet einen isolierten lokalen HTTP-Testserver,
+die Sicherheitsprüfungen echte PostgreSQL-Migrationen mit Auth-/Storage-Stubs.
+Es wurde bei dieser Überarbeitung kein externes Supabase-Projekt getestet oder
+geändert. Ursache, Änderungen und Grenzen stehen im
+[Abnahmebericht](docs/REVIEW_2026-10-25.md).
+
 ## Ausgeführte Abnahme am 23.10.2026
 
 - TypeScript strict und Next.js-Produktionsbuild: erfolgreich.
@@ -23,6 +33,7 @@ npm run typecheck
 npm test
 npm run build
 npm run test:e2e
+npm run test:e2e:community
 ```
 
 Vitest prüft lokale Kalender-/DST-Logik, Bewertungen, Bildgrenzen, Statistiken,
@@ -65,6 +76,29 @@ und Screenshot in `test-results`; HTML-Bericht: `playwright-report/index.html`.
 Eine reale iOS-/Android-Geräteprüfung mit virtueller Tastatur, HEIC-Originalen,
 Installationsdialog und verschiedenen Browser-Versionen bleibt zusätzlich sinnvoll.
 Die Desktop-Chrome-Emulation ersetzt diese Hardwareprüfung nicht.
+
+## Neue Community- und Theme-Prüfungen
+
+`tests/theme.test.ts` berechnet für alle 25 Truppengattungen in beiden Modi die
+Kontraste von Text, Buttons, Auswahl und Fokus gegen die jeweiligen Flächen.
+`e2e/theme.spec.ts` prüft den Profilwechsel ohne erneute Anmeldung sowie Hell,
+Dunkel und System bei 375 und 430 px.
+
+`npm run test:e2e:community` startet auf den lokalen Ports 3101 und 54389 einen
+Produktionsbuild und einen isolierten HTTP-Vertragstestserver. Dieser enthält nur
+synthetische Konten, Antworten und Bilder und wird niemals von der Produkt-App
+geladen. Er prüft die reale Browseranmeldung, Feed/Profile, Menü mit Tastatur und
+Touch, Anfragezähler, Pagination, Volltext, Bilder/Galerie sowie das Bearbeiten nach
+einem Zeitstempel-Roundtrip. Der HTTP-Testserver prüft keine RLS-Regeln; dafür
+führen die separaten PGlite-Tests die tatsächlichen Migrationen aus.
+
+Dieser Testbuild enthält ausschliesslich lokale Test-Konfiguration. Vor Deployment
+erneut `npm run build` mit den vorgesehenen Umgebungsvariablen ausführen. Beide
+Browser-Suiten verwenden denselben `.next`-Ordner und müssen nacheinander laufen.
+
+Ursache und Validierungsgrenzen: [Zeitstempel](docs/TIMESTAMPS.md).
+Freigaben und RPC-Verträge: [Community](docs/COMMUNITY.md).
+Farbquellen und Gestaltungsstatus: [Truppengattungs-Themes](docs/BRANCH_THEMES.md).
 
 ## Externe Abnahme nach Supabase-Einrichtung
 

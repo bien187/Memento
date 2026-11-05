@@ -213,12 +213,18 @@ npm run typecheck
 npm test
 npm run build
 npm run test:e2e
+npm run test:e2e:community
 ```
 
-Lokale Abnahme am **23.10.2026**: Typecheck und Produktionsbuild erfolgreich,
-**41 Vitest-Tests** sowie **22 Playwright-Tests** erfolgreich. Die Browserabläufe
-prüfen unter anderem leere neue Notizbücher, Entwürfe, Offline-Neuladen, Bildgrenzen,
-Bücher, PDF und Backupimport auf Smartphone und Desktop.
+Lokale Abnahme am **25.10.2026**: Typecheck und Produktionsbuild erfolgreich,
+**67 Vitest-Tests** sowie **30 Browserprüfungen** erfolgreich. Geprüft sind unter
+anderem Zeitstempel-Roundtrips, Themewechsel, Profile, Community-Menü, Bilder und
+Galerien sowie die bisherigen Tagebuch-, Buch-, PDF-, Backup- und Offline-Abläufe.
+Die Community-Browserprüfung nutzt einen isolierten lokalen HTTP-Testserver;
+die RLS-Prüfungen führen die echten Migrationen mit PGlite aus.
+[Änderungen, Abnahme und verbleibende Grenzen](docs/REVIEW_2026-10-25.md).
+Nach dem isolierten Community-Testbuild vor einem Deployment erneut
+`npm run build` mit der vorgesehenen Cloud-Konfiguration ausführen.
 
 Playwright verwendet standardmässig lokal installiertes Google Chrome und startet
 einen Produktionsserver auf Port 3100. PostgreSQL-Tests laufen ohne Docker mit

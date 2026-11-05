@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
-import { motion, useReducedMotion } from "motion/react";
 import {
   LayoutGrid,
   List,
@@ -30,7 +29,8 @@ import { Button, Empty, Modal, useConfirm, useToast } from "./ui";
 import { Photo, Gallery } from "./media";
 import { useStore } from "./store";
 import { ExportDialog } from "./export";
-import { cn, message } from "@/lib/utils";
+import { EntryCollection } from "./entry-collection";
+import { message } from "@/lib/utils";
 export function Journal({
   period,
   entries,
@@ -44,8 +44,7 @@ export function Journal({
 }) {
   const { data, setPreferences, save, identity } = useStore(),
     confirm = useConfirm(),
-    toast = useToast(),
-    reduced = useReducedMotion();
+    toast = useToast();
   const view = data?.user_preferences[0]?.view ?? "grid";
   const [search, setSearch] = useState(""),
     [milestones, setMilestones] = useState(false),
@@ -319,100 +318,30 @@ export function Journal({
           }
         />
       ) : (
-        <div className={cn("entries", `entries-${view}`)}>
-          {visible.map((entry, i) => (
-            <motion.article
-              key={entry.id}
-              className={cn(
-                "entry-card",
-                entry.milestone && "is-milestone",
-                !entry.cover_id && "text-card",
-              )}
-              initial={reduced ? false : { opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.25, delay: Math.min(i, 8) * 0.025 }}
+        <EntryCollection
+          entries={visible}
+          view={view}
+          startDate={period.start_date}
+          onOpen={setReader}
+          renderPhoto={(id, alt) => <Photo id={id} alt={alt} />}
+          renderActions={(entry) => (
+            <button
+              className="star-button"
+              aria-label={
+                entry.milestone
+                  ? "Meilenstein entfernen"
+                  : "Als Meilenstein markieren"
+              }
+              aria-pressed={entry.milestone}
+              onClick={() => void star(entry).catch((e) => toast(message(e)))}
             >
-              <button
-                className="entry-open"
-                aria-label={`${entryTitle(entry.date, period.start_date)}${entry.subtitle ? `: ${entry.subtitle}` : ""}`}
-                onClick={() => setReader(entry)}
-              >
-                {view !== "cards" &&
-                  (entry.cover_id ? (
-                    <div className="entry-image">
-                      <Photo
-                        id={entry.cover_id}
-                        alt={entry.subtitle || "Tagebuchfoto"}
-                      />
-                      <span className="photo-count">
-                        {entry.media_ids.length.toString().padStart(2, "0")} /
-                        FOTOS
-                      </span>
-                    </div>
-                  ) : (
-                    <div className="entry-type-cover">
-                      <span className="cover-week">
-                        WOCHE{" "}
-                        {serviceWeek(period.start_date, entry.date)
-                          .toString()
-                          .padStart(2, "0")}
-                      </span>
-                      <span className="cover-day">
-                        {dateLabel(entry.date, { day: "2-digit" })}
-                        <small>
-                          /{dateLabel(entry.date, { month: "2-digit" })}
-                        </small>
-                      </span>
-                      <span className="cover-note">Ein Tag, der bleibt.</span>
-                    </div>
-                  ))}
-                {view === "cards" && (
-                  <div className="compact-date">
-                    <strong>{dateLabel(entry.date, { day: "2-digit" })}</strong>
-                    <span>{dateLabel(entry.date, { month: "short" })}</span>
-                  </div>
-                )}
-                <div className="entry-body">
-                  <p className="entry-date">
-                    {entryTitle(entry.date, period.start_date)}
-                  </p>
-                  <h3>{entry.subtitle || "Ein Tag, der bleibt."}</h3>
-                  <div className="entry-meta">
-                    <span>
-                      TAG{" "}
-                      {serviceDay(period.start_date, entry.date)
-                        .toString()
-                        .padStart(2, "0")}
-                    </span>
-                    <span>
-                      {entry.milestone
-                        ? "MEILENSTEIN"
-                        : entry.visibility === "private"
-                          ? "PRIVAT"
-                          : "FREIGEGEBEN"}
-                    </span>
-                    <ArrowUpRight size={16} />
-                  </div>
-                </div>
-              </button>
-              <button
-                className="star-button"
-                aria-label={
-                  entry.milestone
-                    ? "Meilenstein entfernen"
-                    : "Als Meilenstein markieren"
-                }
-                aria-pressed={entry.milestone}
-                onClick={() => void star(entry).catch((e) => toast(message(e)))}
-              >
-                <Star
-                  size={17}
-                  fill={entry.milestone ? "currentColor" : "none"}
-                />
-              </button>
-            </motion.article>
-          ))}
-        </div>
+              <Star
+                size={17}
+                fill={entry.milestone ? "currentColor" : "none"}
+              />
+            </button>
+          )}
+        />
       )}
       {currentReader && (
         <Modal

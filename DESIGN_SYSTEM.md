@@ -34,7 +34,19 @@ Grad-Ersatzsymbole sind als solche gekennzeichnet.
 Die offiziellen Katalogreferenzen sind bei den Datenbankzeilen und in
 `src/lib/domain/catalogs.ts` hinterlegt.
 
-Zurückhaltende Akzentpaletten für Infanterie/Standard, Artillerie/Militärpolizei,
-Sanität/Luftwaffe und Logistik sind im Theme hinterlegt. Sie sind gestalterisch
-inspirierte UI-Akzente, keine verbindliche Wiedergabe offizieller Abzeichenfarben.
+`src/lib/domain/theme.ts` definiert typisierte Akzentpaletten für alle 25
+Truppengattungen und Dienstzweige. Der Store setzt `--accent`, `--accent-soft`,
+`--on-accent`, `--accent-secondary`, `--accent-secondary-soft`, `--focus` und
+`--theme-tint` aus dem gespeicherten eigenen Profil, jeweils für Hell und Dunkel.
+`--rust` bleibt ein kompatibler Alias des sekundären Akzents für bestehende
+Verlaufsgrafiken. Profil- und Systemmodusänderungen wirken ohne Neuanmeldung.
+Leseflächen und neutrale Textfarben bleiben konsistent; die Seitenleiste erhält
+eine dezente Tönung. Auswahl hat zusätzlich Linien, Rahmen, Symbole oder
+semantische Zustände. Die Verfassungslinie bleibt zusätzlich gestrichelt.
+
+Für sämtliche Themen berechnen automatisierte Tests mindestens 4,5:1 für kleinen
+Text und 3:1 für Fokus-/Bedienelementindikatoren auf den verwendeten Flächen.
+Die Browserprüfung umfasst 375 und 430 px sowie Profil- und Moduswechsel.
+Alle UI-Hexwerte sind vorläufige Designentscheidungen, keine amtlichen Farbcodes.
+[Zuordnungen, Quellen und Kontrastregeln](docs/BRANCH_THEMES.md).
 Die universelle Memento-Marke bleibt davon unabhängig. Siehe BRANDING.md.

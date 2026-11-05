@@ -49,6 +49,9 @@ export const demoProfile: Profile = {
   unit: "Genie Kp 3 · fiktiv",
   discoverable: false,
   private_profile: true,
+  share_function: false,
+  share_service_period: false,
+  share_connections: false,
   avatar_id: null,
 };
 
