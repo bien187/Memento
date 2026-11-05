@@ -125,6 +125,37 @@ neu laden. Für eine Installation ausserhalb von `localhost` ist HTTPS erforderl
 Erinnerungen werden bei geöffneter App verarbeitet; zeitgenaue Hintergrund-Pushs sind
 nicht implementiert.
 
+## Öffentliche Demo (`/demo`)
+
+Unter **`/demo`** lässt sich Memento ohne Anmeldung, ohne Registrierung und ohne
+Supabase-Konfiguration ausprobieren, zum Beispiel lokal unter
+[localhost:3000/demo](http://localhost:3000/demo) oder auf dem eigenen Deployment unter
+`<deine-domain>/demo`. Die Demo verwendet die regulären Komponenten und das
+originale Design. Alle Bereiche liegen unter demselben Präfix (`/demo/calendar`,
+`/demo/statistics`, `/demo/community`, `/demo/profile`).
+
+Enthalten ist ein vollständig **fiktives Notizbuch**: eine Genie-RS mit 17 Einträgen,
+ein WK mit 4 Einträgen, Meilensteine, unterschiedliche Stimmungen und Verfassungen,
+illustrierte Testfotos sowie das Erinnerungsbuch „Achtzehn Wochen.“ mit Kapiteln,
+Freitext, Galerie und veröffentlichter Version. Ausprobieren lassen sich
+Tagebuchansichten, Volltextsuche, Kalender, Detailansicht, Fotogalerie, Editor,
+Statistik, Profil mit Dienstperioden, Bucheditor, Lesemodus sowie PDF- und ZIP-Export.
+
+Isolation:
+
+- Die Demo schreibt in eine eigene IndexedDB (`memento-demo-v1`). Das persönliche
+  Notizbuch (`feldbuch-v1`) wird auf `/demo` nicht geöffnet.
+- Es wird keine Identität in `localStorage` gespeichert, kein Konto angelegt und kein
+  Supabase-Aufruf ausgeführt. Der Service Worker wird in der Demo nicht registriert.
+- Community und Freigabelinks sind deaktiviert und mit einem Demo-Hinweis versehen.
+- Bei jedem Laden und über **Zurücksetzen** werden die Testdaten neu eingespielt.
+  Änderungen von Besuchenden bleiben nur bis dahin im Browser.
+
+Die Daten stehen in [`src/lib/demo/data.ts`](src/lib/demo/data.ts), die Fotos in
+`public/demo/photos` (erzeugt mit `node scripts/generate-demo-photos.mjs`).
+Ein optionaler Link zurück zur Portfolioseite erscheint im Demo-Hinweis, sobald
+`NEXT_PUBLIC_PORTFOLIO_URL` gesetzt ist. Ohne diese Variable wird kein Link angezeigt.
+
 ## Cloudfunktionen einrichten
 
 Der Quellcode für Supabase ist enthalten. Ein externes Projekt oder Hosting wird

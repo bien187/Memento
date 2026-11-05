@@ -16,7 +16,7 @@ export function ShareDialog({
   targetId?: string;
   onClose: () => void;
 }) {
-  const { identity, data, refresh } = useStore(),
+  const { identity, data, refresh, demo } = useStore(),
     toast = useToast(),
     confirm = useConfirm(),
     cache = useQueryClient();
@@ -127,10 +127,17 @@ export function ShareDialog({
       description="Du entscheidest, wer Einblick erhält."
     >
       {identity?.mode !== "cloud" ? (
-        <Empty
-          title="Freigaben brauchen eine Cloud-Verbindung."
-          text="Öffentliche, widerrufbare Links benötigen ein eingerichtetes Supabase-Projekt und ein persönliches Konto. Lokale Vorschau und PDF-Export sind im Bucheditor verfügbar."
-        />
+        demo ? (
+          <Empty
+            title="In der Demo werden keine Links erstellt."
+            text="Im echten Memento erzeugst du hier widerrufbare Links mit optionalem Passwort und Ablaufdatum. Die Demo erstellt bewusst keine öffentlichen Freigaben. Lesemodus und PDF-Export kannst du im Bucheditor ausprobieren."
+          />
+        ) : (
+          <Empty
+            title="Freigaben brauchen eine Cloud-Verbindung."
+            text="Öffentliche, widerrufbare Links benötigen ein eingerichtetes Supabase-Projekt und ein persönliches Konto. Lokale Vorschau und PDF-Export sind im Bucheditor verfügbar."
+          />
+        )
       ) : (
         <div className="form-stack">
           {kind === "diary" && (

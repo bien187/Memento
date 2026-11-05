@@ -29,6 +29,8 @@ import { db } from "@/lib/local/db";
 import { today, inPeriod, serviceDay, dayNumber } from "@/lib/domain/dates";
 import type { Entry } from "@/lib/domain/models";
 import { message } from "@/lib/utils";
+import { appPath, sectionPath } from "@/lib/demo/mode";
+import { DemoBanner } from "./demo-banner";
 const nav = [
   { path: "/", key: "diary", label: "Tagebuch", icon: BookOpen },
   { path: "/calendar", key: "calendar", label: "Kalender", icon: CalendarDays },
@@ -46,7 +48,8 @@ export function App({ section: initialSection }: { section: string }) {
   // The cached shell is shared by all five pages. Its server prop can still
   // describe the diary after an offline reload at a different URL.
   const section =
-    nav.find((item) => item.path === pathname)?.key ?? initialSection;
+    nav.find((item) => item.path === sectionPath(pathname))?.key ??
+    initialSection;
   const store = useStore(),
     { identity, data, ready, online, setPreferences, refresh } = store;
   const toast = useToast();
@@ -151,7 +154,7 @@ export function App({ section: initialSection }: { section: string }) {
     return (
       <main className="error-page">
         <h1>Diese Seite gibt es nicht.</h1>
-        <Link href="/">Zum Tagebuch</Link>
+        <Link href={appPath("/")}>Zum Tagebuch</Link>
       </main>
     );
   const day = period
@@ -172,7 +175,7 @@ export function App({ section: initialSection }: { section: string }) {
         Zum Inhalt springen
       </a>
       <aside className="sidebar">
-        <Link className="brand" href="/">
+        <Link className="brand" href={appPath("/")}>
           <Brand />
         </Link>
         <p className="sidebar-caption">Deine Dienstzeit. Deine Geschichte.</p>
@@ -180,8 +183,8 @@ export function App({ section: initialSection }: { section: string }) {
           {nav.map((n) => (
             <Link
               key={n.key}
-              href={n.path}
-              onNavigate={(event) => navigateOffline(event, n.path)}
+              href={appPath(n.path)}
+              onNavigate={(event) => navigateOffline(event, appPath(n.path))}
               prefetch={online ? undefined : false}
               aria-current={section === n.key ? "page" : undefined}
               className={section === n.key ? "active" : ""}
@@ -214,12 +217,14 @@ export function App({ section: initialSection }: { section: string }) {
             <span>
               <strong>{profile.name}</strong>
               <small>
-                {identity.mode === "cloud"
-                  ? "Persönliches Konto"
-                  : "Lokales Tagebuch"}
+                {store.demo
+                  ? "Demo · fiktive Daten"
+                  : identity.mode === "cloud"
+                    ? "Persönliches Konto"
+                    : "Lokales Tagebuch"}
               </small>
             </span>
-            <Link href="/profile" aria-label="Profil öffnen">
+            <Link href={appPath("/profile")} aria-label="Profil öffnen">
               <ArrowUpRight size={18} />
             </Link>
           </div>
@@ -228,7 +233,7 @@ export function App({ section: initialSection }: { section: string }) {
       <div className="workspace">
         <header className="topbar">
           <Link
-            href="/"
+            href={appPath("/")}
             className="mobile-brand"
             aria-label="Memento – Tagebuch"
           >
@@ -254,14 +259,16 @@ export function App({ section: initialSection }: { section: string }) {
                 <ChevronDown size={14} />
               </div>
             ) : (
-              <Link href="/profile">
+              <Link href={appPath("/profile")}>
                 Dienstperiode erstellen <ArrowUpRight size={14} />
               </Link>
             )}
           </div>
           <div className="topbar-status">
             {identity.mode !== "cloud" && (
-              <span className="mode-badge">Lokal</span>
+              <span className="mode-badge">
+                {store.demo ? "Demo" : "Lokal"}
+              </span>
             )}
             <button
               className="sync-indicator"
@@ -284,11 +291,13 @@ export function App({ section: initialSection }: { section: string }) {
                       ? `${operations.length} ausstehend`
                       : identity.mode === "cloud"
                         ? "Synchronisiert"
-                        : "Auf diesem Gerät"}
+                        : store.demo
+                          ? "Nur in dieser Demo"
+                          : "Auf diesem Gerät"}
               </span>
             </button>
             <Link
-              href="/profile"
+              href={appPath("/profile")}
               className="avatar small-avatar"
               aria-label="Dein Profil"
             >
@@ -303,6 +312,7 @@ export function App({ section: initialSection }: { section: string }) {
               : `Synchronisation pausiert: ${store.syncError}`}
           </div>
         )}
+        {store.demo && <DemoBanner />}
         <main id="main" className="main-content">
           {section === "diary" &&
             (period ? (
@@ -318,7 +328,7 @@ export function App({ section: initialSection }: { section: string }) {
                 text="Lege im Profil eine RS, einen WK oder eine andere Dienstperiode an."
                 action={
                   <Button asChild>
-                    <Link href="/profile">
+                    <Link href={appPath("/profile")}>
                       Dienstperiode anlegen
                       <ArrowUpRight size={16} />
                     </Link>
@@ -365,8 +375,8 @@ export function App({ section: initialSection }: { section: string }) {
           {nav.map((n) => (
             <Link
               key={n.key}
-              href={n.path}
-              onNavigate={(event) => navigateOffline(event, n.path)}
+              href={appPath(n.path)}
+              onNavigate={(event) => navigateOffline(event, appPath(n.path))}
               prefetch={online ? undefined : false}
               className={section === n.key ? "active" : ""}
               aria-current={section === n.key ? "page" : undefined}

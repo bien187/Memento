@@ -44,7 +44,7 @@ type Feed = {
   start_date: string;
 };
 export function Community() {
-  const { identity } = useStore(),
+  const { identity, demo } = useStore(),
     toast = useToast(),
     confirm = useConfirm(),
     cache = useQueryClient();
@@ -123,10 +123,17 @@ export function Community() {
             </h1>
           </div>
         </div>
-        <Empty
-          title="Eine Verbindung braucht ein Konto."
-          text="Die Community verwendet Supabase-Konten und bestätigte Freigaben. Dein lokales Tagebuch bleibt auf diesem Gerät."
-        />
+        {demo ? (
+          <Empty
+            title="In der Demo nicht verfügbar."
+            text="Die Community verbindet echte Konten über bestätigte Follows und einen privaten Feed. Damit keine fiktiven Daten mit echten Personen vermischt werden, ist sie in der Demo deaktiviert."
+          />
+        ) : (
+          <Empty
+            title="Eine Verbindung braucht ein Konto."
+            text="Die Community verwendet Supabase-Konten und bestätigte Freigaben. Dein lokales Tagebuch bleibt auf diesem Gerät."
+          />
+        )}
       </>
     );
   const list = people.data ?? [];

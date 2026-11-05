@@ -18,6 +18,8 @@ werden ausschliesslich im Profil verwaltet. Alle persönlichen Daten sind zunäc
 - `src/lib/domain`: Zod-Schemas, reine Kalendertagslogik, Statistiken, Kataloge.
 - `src/lib/local`: Dexie, atomare lokale Änderungen, persistente Sync-Warteschlange.
 - `src/lib/supabase`: Browser- und requestgebundene Server-Clients.
+- `src/lib/demo`: öffentliche Demo unter `/demo` mit fiktiven Daten, eigener IndexedDB
+  (`memento-demo-v1`) und ohne Identität, Konto oder Supabase-Aufrufe.
 - `supabase/migrations`: normalisiertes Schema, Constraints, RLS und RPCs.
 - `tests`, `e2e`, `supabase/tests`: Unit-, Browser- und Datenbank-Sicherheitstests.
 

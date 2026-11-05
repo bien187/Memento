@@ -19,6 +19,7 @@ import {
   type Preferences,
 } from "@/lib/domain/models";
 import { removeRetiredDemo } from "@/lib/local/retired-demo";
+import { DEMO_OWNER, demoMode } from "@/lib/demo/mode";
 import { FeedbackProvider, useToast } from "./ui";
 import { message } from "@/lib/utils";
 type Identity = { id: string; mode: "cloud" | "local" };
@@ -39,6 +40,9 @@ type Store = {
   logout: () => Promise<void>;
   refresh: () => Promise<void>;
   setPreferences: (value: Partial<Preferences>) => Promise<void>;
+  /** True on /demo: fictional data in a separate database, no account, no cloud. */
+  demo: boolean;
+  resetDemo: () => Promise<void>;
 };
 const Context = createContext<Store>(null!);
 export const useStore = () => useContext(Context);
@@ -67,6 +71,8 @@ function StoreProvider({ children }: PropsWithChildren) {
         ? previous
         : value,
     );
+    // The demo identity is never persisted, so the regular app is unaffected.
+    if (demoMode) return;
     if (value) localStorage.setItem("feldbuch.identity", JSON.stringify(value));
     else localStorage.removeItem("feldbuch.identity");
   }, []);
@@ -74,6 +80,18 @@ function StoreProvider({ children }: PropsWithChildren) {
     let active = true;
     let unsubscribe = () => {};
     async function init() {
+      if (demoMode) {
+        try {
+          const { seedDemo } = await import("@/lib/demo/seed");
+          await seedDemo(db);
+          if (active) changeIdentity({ id: DEMO_OWNER, mode: "local" });
+        } catch (e) {
+          toast(message(e));
+        } finally {
+          if (active) setReady(true);
+        }
+        return;
+      }
       try {
         const raw = localStorage.getItem("feldbuch.identity");
         await removeRetiredDemo(localStorage);
@@ -110,7 +128,7 @@ function StoreProvider({ children }: PropsWithChildren) {
     on();
     window.addEventListener("online", on);
     window.addEventListener("offline", on);
-    if ("serviceWorker" in navigator)
+    if (!demoMode && "serviceWorker" in navigator)
       void navigator.serviceWorker.register("/sw.js").catch(() => {});
     return () => {
       active = false;
@@ -197,7 +215,14 @@ function StoreProvider({ children }: PropsWithChildren) {
     },
     [identity, online, refresh, toast],
   );
+  async function resetDemo() {
+    if (!demoMode) return;
+    const { seedDemo } = await import("@/lib/demo/seed");
+    await seedDemo(db);
+    toast("Die Demo wurde auf die fiktiven Testdaten zurückgesetzt.");
+  }
   async function enterLocal() {
+    if (demoMode) return;
     let id = localStorage.getItem("feldbuch.local-id");
     if (!id) {
       id = crypto.randomUUID();
@@ -208,6 +233,8 @@ function StoreProvider({ children }: PropsWithChildren) {
     changeIdentity({ id, mode: "local" });
   }
   async function logout() {
+    // The demo has no account to leave; it starts over instead.
+    if (demoMode) return resetDemo();
     if (identity?.mode === "cloud") await supabase().auth.signOut();
     changeIdentity(null);
     queryClient.clear();
@@ -236,6 +263,8 @@ function StoreProvider({ children }: PropsWithChildren) {
         logout,
         refresh,
         setPreferences,
+        demo: demoMode,
+        resetDemo,
       }}
     >
       {children}

@@ -19,6 +19,7 @@ import {
   AlertTriangle,
   ImagePlus,
   Bell,
+  RotateCcw,
 } from "lucide-react";
 import { useStore } from "./store";
 import { Button, Modal, Field, useToast, useConfirm } from "./ui";
@@ -53,7 +54,16 @@ import {
 import { download, message } from "@/lib/utils";
 import { supabase } from "@/lib/supabase/browser";
 export function ProfileView() {
-  const { identity, data, save, setPreferences, logout, refresh } = useStore(),
+  const {
+      identity,
+      data,
+      save,
+      setPreferences,
+      logout,
+      refresh,
+      demo,
+      resetDemo,
+    } = useStore(),
     toast = useToast(),
     confirm = useConfirm();
   const profile = data!.profiles[0],
@@ -243,9 +253,11 @@ export function ProfileView() {
         </div>
         <div className="profile-identity">
           <p className="eyebrow">
-            {identity?.mode === "cloud"
-              ? "Persönliches Konto"
-              : "Lokal auf diesem Gerät"}
+            {demo
+              ? "Demo · fiktives Profil"
+              : identity?.mode === "cloud"
+                ? "Persönliches Konto"
+                : "Lokal auf diesem Gerät"}
           </p>
           <h2>{profile.name}</h2>
           {profile.username && <p className="muted">@{profile.username}</p>}
@@ -675,36 +687,52 @@ export function ProfileView() {
             </Button>
           </form>
         )}
-        <div className="actions">
-          <Button variant="outline" onClick={() => void logout()}>
-            <LogOut size={16} />
-            Abmelden
-          </Button>
-          <Button
-            variant="ghost"
-            onClick={async () => {
-              if (
-                await confirm({
-                  title: "Lokale Daten von diesem Gerät entfernen?",
-                  text: "Nicht synchronisierte Daten gehen verloren. Sichere vorher ein ZIP-Backup.",
-                  danger: true,
-                  label: "Lokale Daten entfernen",
-                })
-              ) {
-                await clearOwner(identity!.id);
-                await logout();
-              }
-            }}
-          >
-            Lokalen Gerätespeicher leeren
-          </Button>
-          <Button variant="danger" onClick={() => setDeleting(true)}>
-            <Trash2 size={16} />
-            {identity?.mode === "cloud"
-              ? "Konto löschen"
-              : "Lokales Tagebuch löschen"}
-          </Button>
-        </div>
+        {demo ? (
+          <>
+            <p className="muted">
+              Diese Demo hat kein Konto. Alle Angaben sind fiktiv und Änderungen
+              bleiben in einem separaten Demo-Speicher dieses Browsers. Dein
+              persönliches Memento wird nicht verändert.
+            </p>
+            <div className="actions">
+              <Button variant="outline" onClick={() => void resetDemo()}>
+                <RotateCcw size={16} />
+                Demo zurücksetzen
+              </Button>
+            </div>
+          </>
+        ) : (
+          <div className="actions">
+            <Button variant="outline" onClick={() => void logout()}>
+              <LogOut size={16} />
+              Abmelden
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={async () => {
+                if (
+                  await confirm({
+                    title: "Lokale Daten von diesem Gerät entfernen?",
+                    text: "Nicht synchronisierte Daten gehen verloren. Sichere vorher ein ZIP-Backup.",
+                    danger: true,
+                    label: "Lokale Daten entfernen",
+                  })
+                ) {
+                  await clearOwner(identity!.id);
+                  await logout();
+                }
+              }}
+            >
+              Lokalen Gerätespeicher leeren
+            </Button>
+            <Button variant="danger" onClick={() => setDeleting(true)}>
+              <Trash2 size={16} />
+              {identity?.mode === "cloud"
+                ? "Konto löschen"
+                : "Lokales Tagebuch löschen"}
+            </Button>
+          </div>
+        )}
       </section>
       {editing && (
         <Modal

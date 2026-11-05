@@ -1,4 +1,5 @@
 import Dexie, { type Table } from "dexie";
+import { DEMO_DATABASE, demoMode } from "../demo/mode";
 import type {
   Profile,
   Period,
@@ -55,7 +56,8 @@ export class FeldbuchDB extends Dexie {
     });
   }
 }
-export const db = new FeldbuchDB();
+// The public demo (/demo) gets its own database and never opens the personal one.
+export const db = new FeldbuchDB(demoMode ? DEMO_DATABASE : "feldbuch-v1");
 export async function saveEntity<T extends Entity>(
   table: EntityTable,
   value: T,
